@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "585107310878",
+    "project_id": "saha-map",
+    "storage_bucket": "saha-map.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585107310878:android:fc465b5ae0fba5fe6de10f",
+        "android_client_info": {
+          "package_name": "com.saha_map.saha_map"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9bt1JAmeBi7m2uFr6Gb-wSD46iS8ojLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,5 @@
+package com.saha_map.saha_map
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity()
