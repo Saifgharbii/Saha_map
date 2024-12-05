@@ -6,7 +6,7 @@ import 'appointment/AppointmentPage.dart';
 import '../profile/SettingsPage.dart';
 import '../profile/NotificationsPage1.dart';
 import '../profile/HelpPage.dart';
-import 'ProfilePage.dart'; // Assurez-vous d'importer la page ProfilePage
+import 'ProfilePage.dart';
 import 'CalendarPage.dart';
 import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  GlobalController _globalController = GlobalController();
+  final GlobalController _globalController = GlobalController();
   String userName = '';
   String userAvatar = '';
 
@@ -64,20 +64,20 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: AssetImage(userAvatar.isEmpty ? 'assets/images/F1.jpg' : userAvatar),
+                backgroundImage: userAvatar.isEmpty ? const AssetImage('assets/images/F1.jpg') : NetworkImage(userAvatar),
                 radius: 25,
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Salut,",
                   style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
                 Text(
                   userName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,

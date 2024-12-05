@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
@@ -34,6 +35,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
+      if(_selectedGender == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Veuillez sélectionner un genre.')),
+        );
+        return;
+      }
+      if(role == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Veuillez sélectionner un rôle.')),
+        );
+        return;
+      }
+
+      if(_selectedImage == null) {
+        _showSelectImageDialog();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Veuillez sélectionner une image.')),
+        );
+        return;
+      }
+
       try {
         userCredential = await _auth
             .createUserWithEmailAndPassword(
@@ -79,7 +101,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     await _checkPermission();
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -90,6 +112,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  void _showSelectImageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Choisir une image'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Prendre une photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choisir une photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _checkPermission() async {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
@@ -97,14 +151,41 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  Future<String?> _uploadImageToImgur(File imageFile) async {
+    const clientId = '9f9ec81a2a40523';
+    final uri = Uri.parse('https://api.imgur.com/3/image');
+    try {
+      // Create multipart request
+      var request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Client-ID $clientId';
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        imageFile.path,
+      ));
+
+      // Send request
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseData);
+        return jsonData['data']['link']; // Return the URL of the uploaded image
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Upload failed: $e');
+    }
+    return null;
+  }
+
   Future<String?> _uploadImage() async {
     _checkPermission();
     if (_selectedImage != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final String path = '${directory.path}/profile_picture${userCredential!.user!.uid}.jpg';
-      await _selectedImage!.copy(path);
+      final uploadUrl = await _uploadImageToImgur(_selectedImage!);
+      return uploadUrl;
     }
-    return _selectedImage?.path;
+    return null;
   }
 
   @override
@@ -132,7 +213,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: _pickImage,
+                      onTap: _showSelectImageDialog,
                       child: CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.grey[300],

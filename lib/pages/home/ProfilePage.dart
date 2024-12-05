@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../profile/FavorisPage.dart';
 import '../profile/HelpPage.dart';
 import '../profile/SettingsPage.dart';
 
 class ProfilePage extends StatelessWidget {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  ProfilePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,13 +152,14 @@ class ProfilePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Fermer la boîte de dialogue
+                Navigator.pop(context);
               },
               child: Text("Annuler"),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Fermer la boîte de dialogue
+                Navigator.pop(context);
+                _auth.signOut();
                 // Ajoutez ici votre logique de déconnexion
               },
               child: Text("Oui"),

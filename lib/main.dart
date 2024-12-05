@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:saha_map/auth_wrapper.dart';
 import 'models/models.dart';
 import 'pages/authentication/RoleSelectionScreen.dart';
 import 'firebase_options.dart';
@@ -8,9 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   GlobalController globalController = GlobalController();
-  await globalController.fetchAllData();
-  print('Fetched all data');
-  print('Doctors: ${globalController.currentUser}');
+  globalController.fetchAllData();
   runApp(const Sa7aMapApp());
 }
 
@@ -21,7 +20,7 @@ class Sa7aMapApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: AuthWrapper(),
     );
   }
 }

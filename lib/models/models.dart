@@ -234,6 +234,7 @@ class GlobalController extends GetxController {
   final RxList<DoctorModel> doctors = RxList<DoctorModel>();
   final RxList<AccommodationModel> accommodations = RxList<AccommodationModel>();
   final RxList<AppointmentModel> appointments = RxList<AppointmentModel>();
+  bool isDataFetched = false;
 
   // Firestore References
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -242,9 +243,8 @@ class GlobalController extends GetxController {
   Future<void> fetchAllData() async {
     await fetchDoctors();
     await fetchAccommodations();
-    print('Fetched all accommodations');
     await fetchAppointments();
-    print('Fetched all appointments');
+    isDataFetched = true;
   }
 
   Future<void> fetchDoctors() async {
