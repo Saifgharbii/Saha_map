@@ -2,8 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:saha_map/auth_wrapper.dart';
+import 'package:saha_map/pages/authentication/LoginPage.dart';
+import 'package:saha_map/pages/authentication/RegistrationPage.dart';
 import 'models/models.dart';
-import 'pages/authentication/RoleSelectionScreen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -76,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RoleSelectionScreen(isRegistration: false),
+                      builder: (context) => const LoginPage(),
                     ),
                   );
                 },
@@ -100,19 +101,9 @@ class HomeScreen extends StatelessWidget {
               // Bouton Inscription
               ElevatedButton(
                 onPressed: () async {
-                  // final generator = TestDataGenerator();
-                  // await generator.generateTestData(
-                  //   numberOfDoctors: 10,
-                  //   numberOfPatients: 20,
-                  //   numberOfAccommodations: 15,
-                  //   numberOfServiceProviders: 5,
-                  //   numberOfAppointments: 30,
-                  // );
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const RoleSelectionScreen(isRegistration: true),
-                    ),
+                      MaterialPageRoute(builder: (context) => const RegistrationPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
