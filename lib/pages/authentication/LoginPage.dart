@@ -34,10 +34,10 @@ class _LoginPageState extends State<LoginPage> {
       UserModel currentUser = UserModel.fromFirestore(userDoc);
       globalController.setCurrentUser(currentUser);
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(userName: currentUser.username, userAvatar: currentUser.profilePicture!),
+          builder: (context) => HomePage(),
         ),
       );
 

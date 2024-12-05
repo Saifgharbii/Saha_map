@@ -14,8 +14,7 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final currentUser = FirebaseAuth.instance.currentUser!;
-          return HomePage(userName: currentUser.displayName ?? "", userAvatar: "");
+          return const HomePage();
         }else{
         return const HomeScreen();
         }

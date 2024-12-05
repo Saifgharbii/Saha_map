@@ -1,13 +1,36 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:saha_map/main.dart';
+import 'package:saha_map/models/models.dart';
 import '../profile/FavorisPage.dart';
 import '../profile/HelpPage.dart';
 import '../profile/SettingsPage.dart';
 
-class ProfilePage extends StatelessWidget {
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+
+class _ProfilePageState extends State<ProfilePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GlobalController _globalController = GlobalController();
+
+  @override
+  void initState() {
+    super.initState();
+    log(
+      "ProfilePage"
+      "initState"
+      "Current user: ${_globalController.currentUser}",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,11 +57,13 @@ class ProfilePage extends StatelessWidget {
             // Section de l'image et du nom
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/images/pdpimg.jpg'), // Remplacez par l'image de l'utilisateur
+              backgroundImage: (_globalController.currentUser.value?.profilePicture == null) ?
+                const AssetImage("assets/images/F1.jpg") :
+              NetworkImage(_globalController.currentUser.value?.profilePicture ?? ""),
             ),
             SizedBox(height: 10),
             Text(
-              "Amal Madhi",
+              _globalController.currentUser.value?.username ?? "Amal Madhi",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -160,7 +185,9 @@ class ProfilePage extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
                 _auth.signOut();
-                // Ajoutez ici votre logique de déconnexion
+                navigator?.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (route) => false);
               },
               child: Text("Oui"),
             ),

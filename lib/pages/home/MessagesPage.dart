@@ -244,7 +244,7 @@ class MessagesPage extends StatelessWidget {
           case 0:
           Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(userName: "Amal Madhi", userAvatar: "assets/images/pdpimg.jpg"))
+          MaterialPageRoute(builder: (context) => const HomePage())
           );
           break;
           case 1:

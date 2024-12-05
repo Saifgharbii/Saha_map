@@ -25,6 +25,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? _selectedGender;
   Role? role;
   UserCredential? userCredential;
+  bool _isLoading = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -57,6 +58,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       }
 
       try {
+        setState(() {
+          _isLoading = true;
+        });
         userCredential = await _auth
             .createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -82,13 +86,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
         );
 
         await _firestore.collection('users').doc(user.id).set(user.toFirestore());
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalController().setCurrentUser(user);
         if(mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Inscription réussie!')),
           );
         }
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } on FirebaseAuthException catch (e) {
         if(mounted) {
@@ -103,7 +112,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> _pickImage(ImageSource source) async {
     await _checkPermission();
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: source);
 
     if (pickedFile != null) {
       setState(() {
@@ -146,8 +155,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> _checkPermission() async {
     var status = await Permission.storage.status;
+    var cameraStatus = await Permission.camera.status;
     if (!status.isGranted) {
       await Permission.storage.request();
+    }
+    if (!cameraStatus.isGranted) {
+      await Permission.camera.request();
     }
   }
 
@@ -190,6 +203,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    if(_isLoading){
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

@@ -99,7 +99,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             case 0:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage(userName: '', userAvatar: '',)),
+                MaterialPageRoute(builder: (context) => const HomePage()),
               );
               break;
             case 1:

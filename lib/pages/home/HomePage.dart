@@ -12,9 +12,7 @@ import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
 
 class HomePage extends StatefulWidget {
-  final String userName;
-  final String userAvatar;
-  const HomePage({super.key, required this.userName, required this.userAvatar});
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,21 +33,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initializeUser() async {
-    if(widget.userName.isEmpty) {
-      _auth.currentUser!.uid;
-      final DocumentSnapshot userDoc = await _db.collection('users').doc(_auth.currentUser!.uid).get();
-      final UserModel user = UserModel.fromFirestore(userDoc);
-      _globalController.setCurrentUser(user);
-      setState(() {
-        userName = user.username;
-        userAvatar = user.profilePicture ?? "";
-        isLoading = false;
-      });
-    }
+    _auth.currentUser!.uid;
+    final DocumentSnapshot userDoc = await _db.collection('users').doc(_auth.currentUser!.uid).get();
+    final UserModel user = UserModel.fromFirestore(userDoc);
+    _globalController.setCurrentUser(user);
+    setState(() {
+      isLoading = false;
+      userName = user.username;
+      userAvatar = user.profilePicture ?? "";
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if(isLoading) {
+      return const Scaffold(
+        body: Center(
+            child: CircularProgressIndicator()
+        )
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey.shade100,

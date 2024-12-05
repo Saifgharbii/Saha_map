@@ -123,7 +123,7 @@ class _CalendarPageState extends State<CalendarPage> {
           });
           switch (index) {
             case 0:
-              _navigateToPage(context, HomePage(userName: '', userAvatar: '',));
+              _navigateToPage(context, const HomePage());
               break;
             case 1:
             // Rester sur la page actuelle
