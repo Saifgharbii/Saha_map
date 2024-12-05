@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final GlobalController _globalController = GlobalController();
+  final GlobalController _globalController = GlobalController.to;
   String userName = '';
   String userAvatar = '';
 

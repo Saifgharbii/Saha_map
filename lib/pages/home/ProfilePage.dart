@@ -19,7 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GlobalController _globalController = GlobalController();
+  final GlobalController _globalController = GlobalController.to;
 
   @override
   void initState() {
