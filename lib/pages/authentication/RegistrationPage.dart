@@ -94,6 +94,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
           );
           await _firestore.collection('patients').doc(user.id).set(patient.toFirestore());
         }
+        if (user.role == Role.DOCTOR){
+          DoctorModel doctor = DoctorModel(user: user);
+          await _firestore.collection('patients').doc(user.id).set(doctor.toFirestore());
+        }
+
+
 
         setState(() {
           _isLoading = false;

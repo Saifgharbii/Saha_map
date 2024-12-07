@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
-// Enums mirroring Django model choices
+
 enum Gender { MALE, FEMALE }
 enum Role { DOCTOR, PATIENT, HOSPITAL_AGENT, ACCOMMODATION_PROVIDER, CLINIC_AGENT }
 enum AccommodationType { HOTEL, APARTMENT, GUEST_HOUSE }
 enum AppointmentMode { IN_PLACE, ONLINE }
 enum AppointmentStatus { DONE, SCHEDULED, ON_HOLD, CANCELED }
+enum Specialties {RADIOLOGY, CARDIOLOGY, DERMATOLOGY, NEUROLOGY, ONCOLOGY, PEDIATRICS, PSYCHIATRY, GYNECOLOGY, ORTHOPEDICS, ANESTHESIOLOGY, OPHTHALMOLOGY, GASTROENTEROLOGY, ENDOCRINOLOGY, PULMONOLOGY, UROLOGY, NEPHROLOGY, RHEUMATOLOGY, PATHOLOGY, IMMUNOLOGY, HEMATOLOGY, GENERAL_PRACTICE, OTOLARYNGOLOGY, PLASTIC_SURGERY, EMERGENCY_MEDICINE, FAMILY_MEDICINE, SPORTS_MEDICINE}
+
 
 // User Model
 class UserModel {
@@ -97,28 +99,44 @@ class PatientModel {
 class DoctorModel {
   final UserModel user;
   final double consultationFee;
-  final String speciality;
+  final Specialties speciality;
   final int experienceYears;
   final double recommendationRate;
 
   DoctorModel({
     required this.user,
-    required this.consultationFee,
-    required this.speciality,
-    required this.experienceYears,
-    required this.recommendationRate,
+    this.consultationFee = 70.0,
+    this.speciality = Specialties.GENERAL_PRACTICE,
+    this.experienceYears = 1,
+    this.recommendationRate = 0.0,
   });
 
   factory DoctorModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return DoctorModel(
       user: UserModel.fromFirestore(doc),
-      consultationFee: data['consultation_fee'],
-      speciality: data['speciality'],
-      experienceYears: data['experience_years'],
-      recommendationRate: data['recommendation_rate'],
+      consultationFee: data['consultation_fee'] ?? 70.0,
+      speciality: Specialties.values.byName(data['speciality'])  ?? Specialties.GENERAL_PRACTICE,
+      experienceYears: data['experience_years'] ?? 1,
+      recommendationRate: data['recommendation_rate'] ?? 0.0,
     );
   }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'username': user.username,
+      'cin': user.cin,
+      'birthday': user.birthday,
+      'gender': user.gender.name,
+      'profile_picture': user.profilePicture,
+      'phone_number': user.phoneNumber,
+      'role': user.role.name,
+      'consultationFee' : consultationFee,
+      'speciality' : speciality,
+      'experienceYears' : experienceYears,
+      'recommendationRate' : recommendationRate,
+    };
+  }
+
 }
 
 // Accommodation Model
