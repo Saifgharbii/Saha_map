@@ -86,6 +86,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
         );
 
         await _firestore.collection('users').doc(user.id).set(user.toFirestore());
+
+        // adding to it's proporiet table
+        if (user.role == Role.PATIENT ){
+          PatientModel patient = PatientModel(
+            user : user
+          );
+          await _firestore.collection('patients').doc(user.id).set(patient.toFirestore());
+        }
+
         setState(() {
           _isLoading = false;
         });

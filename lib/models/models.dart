@@ -60,14 +60,28 @@ class UserModel {
 // Patient Model
 class PatientModel {
   final UserModel user;
-  final String medicalHistory;
+  final String? medicalHistory;
   final String? feedback;
 
   PatientModel({
     required this.user,
-    required this.medicalHistory,
+    this.medicalHistory,
     this.feedback,
   });
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'username': user.username,
+      'cin': user.cin,
+      'birthday': user.birthday,
+      'gender': user.gender.name,
+      'profile_picture': user.profilePicture,
+      'phone_number': user.phoneNumber,
+      'role': user.role.name,
+      'medicalHistory' : medicalHistory,
+      'feedback' : feedback,
+    };
+  }
 
   factory PatientModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
