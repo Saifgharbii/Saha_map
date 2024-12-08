@@ -132,8 +132,6 @@ class _LoginPageState extends State<LoginPage> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Veuillez entrer un email ou un téléphone.';
-                          } else if (!RegExp(r'^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$').hasMatch(value) && !RegExp(r'^[0-9]{8,}$').hasMatch(value)) {
-                            return 'Veuillez entrer un email ou un téléphone valide.';
                           }
                           return null;
                         },
