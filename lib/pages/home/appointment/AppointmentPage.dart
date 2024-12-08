@@ -11,7 +11,7 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  String selectedOption = ""; // Cabinet ou Clinique
+  String selectedServiceProvider = ""; // Cabinet ou Clinique
   String selectedGovernorate = ""; // Gouvernorat
   String selectedSpeciality = ""; // Spécialité
 
@@ -81,14 +81,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 SelectOptionCard(
                   icon: Icons.local_hospital,
                   label: "Clinique",
-                  isActive: selectedOption == "Clinique",
-                  onPressed: () => setState(() => selectedOption = "Clinique"),
+                  isActive: selectedServiceProvider == "CLINIC",
+                  onPressed: () => setState(() => selectedServiceProvider = "Clinique"),
                 ),
                 SelectOptionCard(
                   icon: Icons.medical_services,
                   label: "Cabinet",
-                  isActive: selectedOption == "Cabinet",
-                  onPressed: () => setState(() => selectedOption = "Cabinet"),
+                  isActive: selectedServiceProvider == "HOSPITAL",
+                  onPressed: () => setState(() => selectedServiceProvider = "HOSPITAL"),
                 ),
               ],
             ),
@@ -141,7 +141,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (selectedOption.isEmpty || selectedGovernorate.isEmpty || selectedSpeciality.isEmpty) {
+                  if (selectedServiceProvider.isEmpty || selectedGovernorate.isEmpty || selectedSpeciality.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Veuillez remplir tous les champs !")),
                     );
@@ -150,7 +150,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResultPage(
-                          option: selectedOption,
+                          option: selectedServiceProvider,
                           governorate: selectedGovernorate,
                           speciality: selectedSpeciality,
                         ),

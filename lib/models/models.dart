@@ -184,6 +184,7 @@ class AccommodationModel {
 
 // Service Provider Model
 class ServiceProviderModel {
+  final String id;
   final String name;
   final String phoneNumber;
   final String email;
@@ -192,6 +193,7 @@ class ServiceProviderModel {
   final String type;
 
   ServiceProviderModel({
+    required this.id,
     required this.name,
     required this.phoneNumber,
     required this.email,
@@ -203,6 +205,7 @@ class ServiceProviderModel {
   factory ServiceProviderModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return ServiceProviderModel(
+      id : doc.id,
       name: data['name'],
       phoneNumber: data['phone_number'],
       email: data['email'],
@@ -211,6 +214,51 @@ class ServiceProviderModel {
       type: data['type'],
     );
   }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'name': this.name,
+      'phone_number': this.phoneNumber,
+      'email': this.email,
+      'latitude': this.latitude,
+      'longitude': this.longitude,
+      'type': this.type,
+    };
+  }
+}
+//doctor and service provider association
+class DoctorWorksAtServiceProvider{
+  final DoctorModel doctor ;
+  final ServiceProviderModel serviceProvider ;
+  DoctorWorksAtServiceProvider({
+    required this.doctor,
+    required this.serviceProvider,
+  });
+
+  static Future<DoctorWorksAtServiceProvider> fromFirestore(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+
+    // Fetch doctor and service provider data using their references
+    final doctorRef = data['doctor_ref'] as DocumentReference;
+    final serviceProviderRef = data['service_provider_ref'] as DocumentReference;
+
+    final doctorSnapshot = await doctorRef.get();
+    final serviceProviderSnapshot = await serviceProviderRef.get();
+
+
+    return DoctorWorksAtServiceProvider(
+      doctor: DoctorModel.fromFirestore(doctorSnapshot),
+      serviceProvider: ServiceProviderModel.fromFirestore(serviceProviderSnapshot)
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'doctor_ref': this.doctor.user.id,
+      'service_provider_ref': this.serviceProvider.id,
+    };
+  }
+
+
 }
 
 // Appointment Model
@@ -257,7 +305,6 @@ class AppointmentModel {
       status: AppointmentStatus.values.byName(data['status']),
     );
   }
-
 }
 
 // Global Controller for State Management
