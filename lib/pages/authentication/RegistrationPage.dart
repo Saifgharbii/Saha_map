@@ -49,13 +49,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return;
       }
 
-      if(_selectedImage == null) {
-        _showSelectImageDialog();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez sélectionner une image.')),
-        );
-        return;
-      }
+
 
       try {
         setState(() {

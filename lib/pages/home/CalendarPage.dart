@@ -5,6 +5,8 @@ import 'MessagesPage.dart';
 import '../profile/SettingsPage.dart';
 
 class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
@@ -59,14 +61,14 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Tous Les Rendez-Vous",
           style: TextStyle(color: Colors.teal),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -85,11 +87,11 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               itemCount: currentAppointments.length,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               itemBuilder: (context, index) {
                 final appointment = currentAppointments[index];
                 return _buildAppointmentCard(
@@ -111,7 +113,7 @@ class _CalendarPageState extends State<CalendarPage> {
         backgroundColor: Colors.white,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.black54,
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
@@ -158,7 +160,7 @@ class _CalendarPageState extends State<CalendarPage> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.blue : Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -184,8 +186,8 @@ class _CalendarPageState extends State<CalendarPage> {
     String? time,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16.0),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
@@ -193,7 +195,7 @@ class _CalendarPageState extends State<CalendarPage> {
           BoxShadow(
             color: Colors.grey.shade200,
             blurRadius: 6,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -206,20 +208,20 @@ class _CalendarPageState extends State<CalendarPage> {
                 radius: 30,
                 backgroundImage: AssetImage(doctorImage),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     doctorName,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     doctorDescription,
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                   ),
                   if (date != null && time != null) ...[
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       "Date : $date, Heure : $time",
                       style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
@@ -229,7 +231,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: _buildActionButtons(type),
@@ -264,13 +266,13 @@ class _CalendarPageState extends State<CalendarPage> {
       onPressed: () {
         // Logique associée
       },
-      child: Text(text, style: TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
+      child: Text(text, style: TextStyle(color: Colors.white)),
     );
   }
 }

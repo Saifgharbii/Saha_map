@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:saha_map/main.dart';
 import 'package:saha_map/models/models.dart';
+import 'package:saha_map/pages/home/PaymentPage.dart';
 import '../profile/FavorisPage.dart';
 import '../profile/HelpPage.dart';
 import '../profile/SettingsPage.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({super.key});
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -36,14 +37,14 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Mon Profil",
           style: TextStyle(color: Colors.teal),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -61,12 +62,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 const AssetImage("assets/images/F1.jpg") :
               NetworkImage(_globalController.currentUser.value?.profilePicture ?? ""),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               _globalController.currentUser.value?.username ?? "Amal Madhi",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Liste des options
             Expanded(
@@ -96,7 +97,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.payment,
                     title: "Payment",
                     onTap: () {
-                      // Action pour "Payment"
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PaymentPage()),
+                      );// Action pour "Payment"
                     },
                   ),
                   _buildProfileOption(
@@ -138,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 _showLogoutConfirmation(context);
               },
-              child: Text(
+              child: const Text(
                 "Déconnexion",
                 style: TextStyle(color: Colors.blue, fontSize: 16),
               ),
@@ -159,9 +163,9 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       title: Text(
         title,
-        style: TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 16),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
     );
   }
@@ -172,14 +176,14 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Déconnexion"),
-          content: Text("Êtes-vous sûr de vouloir vous déconnecter ?"),
+          title: const Text("Déconnexion"),
+          content: const Text("Êtes-vous sûr de vouloir vous déconnecter ?"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("Annuler"),
+              child: const Text("Annuler"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -189,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                     (route) => false);
               },
-              child: Text("Oui"),
+              child: const Text("Oui"),
             ),
           ],
         );

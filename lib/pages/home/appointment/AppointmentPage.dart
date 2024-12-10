@@ -6,6 +6,8 @@ import 'ResultPage.dart';
 import '../../profile/SettingsPage.dart';
 
 class AppointmentPage extends StatefulWidget {
+  const AppointmentPage({super.key});
+
   @override
   _AppointmentPageState createState() => _AppointmentPageState();
 }
@@ -41,12 +43,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey.shade100,
         elevation: 0,
-        title: Text(
+        title: const Text(
           "Prendre un rendez-vous",
           style: TextStyle(color: Colors.teal, fontSize: 18, fontWeight: FontWeight.bold,),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -64,17 +66,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     'assets/images/logo.png',
                     height: 75,
                   ),
-                  SizedBox(height: 5),
-                  Text(
+                  const SizedBox(height: 5),
+                  const Text(
                     "Votre santé, Notre priorité!",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.teal),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 10),
-            Text("Sélectionner", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+            const Text("Sélectionner", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -92,9 +94,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 ),
               ],
             ),
-            SizedBox(height: 30),
-    Text("Quelle ville ou quel gouvernorat ?", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-    SizedBox(height: 10),
+            const SizedBox(height: 30),
+    const Text("Quelle ville ou quel gouvernorat ?", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+    const SizedBox(height: 10),
     DropdownButtonFormField<String>(
     decoration: InputDecoration(
     filled: true,
@@ -104,7 +106,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     borderSide: BorderSide.none,
     ),
     ),
-    hint: Text("Sélectionnez un gouvernorat"),
+    hint: const Text("Sélectionnez un gouvernorat"),
     items: _governorates.map((String value) {
     return DropdownMenuItem<String>(
     value: value,
@@ -115,13 +117,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
     selectedGovernorate = value!;
     }),
     ),
-            SizedBox(height: 30),
-            Text("Spécialités", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+            const SizedBox(height: 30),
+            const Text("Spécialités", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
@@ -137,13 +139,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   if (selectedOption.isEmpty || selectedGovernorate.isEmpty || selectedSpeciality.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Veuillez remplir tous les champs !")),
+                      const SnackBar(content: Text("Veuillez remplir tous les champs !")),
                     );
                   } else {
                     Navigator.push(
@@ -160,10 +162,10 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                child: Text(
+                child: const Text(
                   "Rechercher",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
@@ -202,7 +204,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     break;
     }
     },
-    items: [
+    items: const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
@@ -220,7 +222,7 @@ class SelectOptionCard extends StatelessWidget {
   final bool isActive;
   final VoidCallback onPressed;
 
-  SelectOptionCard({
+  const SelectOptionCard({super.key, 
     required this.icon,
     required this.label,
     required this.isActive,
@@ -232,7 +234,7 @@ class SelectOptionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isActive ? Colors.teal.shade200 : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(12),
@@ -240,8 +242,8 @@ class SelectOptionCard extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
-            SizedBox(height: 10),
-            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -255,7 +257,7 @@ class SpecialityCard extends StatelessWidget {
   final bool isActive;
   final VoidCallback onPressed;
 
-  SpecialityCard({
+  const SpecialityCard({super.key, 
     required this.icon,
     required this.label,
     required this.isActive,
@@ -275,8 +277,8 @@ class SpecialityCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
-            SizedBox(height: 8),
-            Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 8),
+            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
           ],
         ),
 

@@ -5,16 +5,18 @@ import '../home/MessagesPage.dart';
 import 'SettingsPage.dart';
 
 class NotificationsPage1 extends StatelessWidget {
+  const NotificationsPage1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Notifications',
           style: TextStyle(color: Colors.teal),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -56,7 +58,7 @@ class NotificationsPage1 extends StatelessWidget {
     break;
     }
     },
-    items: [
+    items: const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),

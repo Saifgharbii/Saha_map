@@ -6,7 +6,7 @@ class AppointmentConfirmationPage extends StatelessWidget {
   final String selectedTime;
   final String problemDescription;
 
-  AppointmentConfirmationPage({
+  const AppointmentConfirmationPage({super.key, 
     required this.doctorName,
     required this.selectedDate,
     required this.selectedTime,
@@ -17,10 +17,10 @@ class AppointmentConfirmationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Confirmation du Rendez-vous', style: TextStyle(color: Colors.teal)),
+        title: const Text('Confirmation du Rendez-vous', style: TextStyle(color: Colors.teal)),
         backgroundColor: Colors.grey.shade50,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -41,15 +41,15 @@ class AppointmentConfirmationPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rendez-vous avec $doctorName', style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold, fontSize: 18)),
-                    SizedBox(height: 10),
+                    Text('Rendez-vous avec $doctorName', style: const TextStyle(color: Colors.blue,fontWeight: FontWeight.bold, fontSize: 18)),
+                    const SizedBox(height: 10),
                     Text('Date: ${selectedDate.toLocal()}'),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text('Heure: $selectedTime'),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text('Problème: $problemDescription'),
-                    SizedBox(height: 20),
-                    Text('Demande enregistrée', style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 20),
+                    const Text('Demande enregistrée', style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),

@@ -16,7 +16,7 @@ class ClinicInfoPage extends StatelessWidget {
   final String imagepath;
   final List<Map<String, String>> avispatient;
 
-  ClinicInfoPage({
+  const ClinicInfoPage({super.key, 
     required this.name,
     required this.description,
     required this.address,
@@ -30,11 +30,11 @@ class ClinicInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Infos Clinique", style: TextStyle(color: Colors.teal),),
+        title: const Text("Infos Clinique", style: TextStyle(color: Colors.teal),),
         centerTitle: true,
         backgroundColor: Colors.grey[100],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -48,18 +48,18 @@ class ClinicInfoPage extends StatelessWidget {
             children: [
               // Carte principale pour la clinique
               _buildClinicCard(context),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Section Profil
               _buildSectionTitle("Profil"),
               Text(
                 description,
-                style: TextStyle(fontSize: 16, height: 1.5),
+                style: const TextStyle(fontSize: 16, height: 1.5),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Avis des patients
               _buildSectionTitle("Avis des Patients"),
               _buildPatientReviews(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -99,7 +99,7 @@ class ClinicInfoPage extends StatelessWidget {
                 break;
             }
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
             BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
             BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
@@ -120,11 +120,11 @@ class ClinicInfoPage extends StatelessWidget {
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -134,17 +134,17 @@ class ClinicInfoPage extends StatelessWidget {
             height: 120,
             fit: BoxFit.cover,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // Nom de la clinique
           Text(
             name,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           // Adresse de la clinique
           Text(
             address,
@@ -153,7 +153,7 @@ class ClinicInfoPage extends StatelessWidget {
               color: Colors.grey[600],
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           // Boutons fonctionnels
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -162,39 +162,39 @@ class ClinicInfoPage extends StatelessWidget {
                 onPressed: () {
                   // Action pour prendre contact avec la clinique
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text(
                   "Ajouter avis",
                   style: TextStyle(color: Colors.white),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
                   // Action pour voir la localisation sur la carte
                   _launchMap();
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text(
                   "Voir sur la carte",
                   style: TextStyle(color: Colors.white),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           // Bouton pour prendre rendez-vous
           ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MessageDetailsPage(name: '', avatar: '', messages: [],)),
+                MaterialPageRoute(builder: (context) => MessageDetailsPage(name: '', avatar: '', messages: const [],)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -202,9 +202,9 @@ class ClinicInfoPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             ),
-            child: Text("Contacter", style: TextStyle(color: Colors.white),),
+            child: const Text("Contacter", style: TextStyle(color: Colors.white),),
           ),
         ],
       ),
@@ -225,7 +225,7 @@ class ClinicInfoPage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
         color: Colors.blue,
@@ -238,7 +238,7 @@ class ClinicInfoPage extends StatelessWidget {
     return Column(
       children: avispatient.map((review) {
         return Card(
-          margin: EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             leading: CircleAvatar(
               backgroundImage: AssetImage(review['image']!),

@@ -5,6 +5,8 @@ import '../home/HomePage.dart';
 import '../home/MessagesPage.dart';
 
 class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
@@ -20,12 +22,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Notifications',
           style: TextStyle(color: Colors.teal),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -34,11 +36,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         elevation: 0,
       ),
       body: ListView(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         children: [
           ListTile(
-            leading: Icon(Icons.notifications_active, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.notifications_active, color: Colors.teal),
+            title: const Text(
               'Activer les notifications',
               style: TextStyle(fontSize: 16),
             ),
@@ -52,10 +54,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
             ),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.alarm, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.alarm, color: Colors.teal),
+            title: const Text(
               'Rappels quotidiens',
               style: TextStyle(fontSize: 16),
             ),
@@ -69,10 +71,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
             ),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.email, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.email, color: Colors.teal),
+            title: const Text(
               'Notifications par email',
               style: TextStyle(fontSize: 16),
             ),
@@ -86,10 +88,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
             ),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.do_not_disturb, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.do_not_disturb, color: Colors.teal),
+            title: const Text(
               'Mode Ne Pas Déranger',
               style: TextStyle(fontSize: 16),
             ),
@@ -103,7 +105,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     bottomNavigationBar: Container(
@@ -139,7 +141,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
     }
     },
-    items: [
+    items: const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),

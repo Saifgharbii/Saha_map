@@ -13,7 +13,7 @@ class ResultPage extends StatelessWidget {
   final String governorate;
   final String speciality;
 
-  ResultPage({
+  ResultPage({super.key, 
     required this.option,
     required this.governorate,
     required this.speciality,
@@ -258,9 +258,9 @@ class ResultPage extends StatelessWidget {
         backgroundColor: Colors.grey.shade50,
         title: Text(
           governorate,
-          style: TextStyle(color: Colors.teal),
+          style: const TextStyle(color: Colors.teal),
         ),
-        iconTheme: IconThemeData(color: Colors.teal),
+        iconTheme: const IconThemeData(color: Colors.teal),
       ),
       body: Column(
         children: [
@@ -270,13 +270,13 @@ class ResultPage extends StatelessWidget {
               options: MapOptions(
                 initialCenter: filteredLocations.isNotEmpty
                     ? LatLng(filteredLocations.first['latitude'], filteredLocations.first['longitude'])
-                    : LatLng(36.8065, 10.1815), // Default center for Tunis
+                    : const LatLng(36.8065, 10.1815), // Default center for Tunis
                 initialZoom: 12.0,
               ),
               children: [
                 TileLayer(
                   urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
+                  subdomains: const ['a', 'b', 'c'],
                 ),
                 MarkerLayer(
                   markers: filteredLocations.map((location) {
@@ -296,13 +296,13 @@ class ResultPage extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text("Fermer"),
+                                  child: const Text("Fermer"),
                                 ),
                               ],
                             ),
                           );
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.location_on,
                           color: Colors.red,
                           size: 40.0,
@@ -321,13 +321,13 @@ class ResultPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final location = filteredLocations[index];
                 return ListTile(
-                  leading: Icon(Icons.medical_services, color: Colors.teal, size: 30),
+                  leading: const Icon(Icons.medical_services, color: Colors.teal, size: 30),
                   title: Text(
                     location['name'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(location['address']),
-                  trailing: Icon(
+                  trailing: const Icon(
                     Icons.arrow_forward_ios,
                     color: Colors.grey,
                     size: 16,
@@ -404,7 +404,7 @@ class ResultPage extends StatelessWidget {
     break;
     }
     },
-    items: [
+    items: const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
