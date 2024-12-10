@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: userAvatar.isEmpty ? const AssetImage('assets/images/F1.jpg') : NetworkImage(userAvatar),
+                backgroundImage: userAvatar.isEmpty ? const AssetImage('assets/images/image.png') : NetworkImage(userAvatar),
                 radius: 25,
               ),
             ),

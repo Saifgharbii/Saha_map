@@ -16,7 +16,6 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalController _globalController = GlobalController.to;
@@ -57,9 +56,12 @@ class _ProfilePageState extends State<ProfilePage> {
             // Section de l'image et du nom
             CircleAvatar(
               radius: 50,
-              backgroundImage: (_globalController.currentUser.value?.profilePicture == null) ?
-                const AssetImage("assets/images/F1.jpg") :
-              NetworkImage(_globalController.currentUser.value?.profilePicture ?? ""),
+              backgroundImage:
+                  (_globalController.currentUser.value?.profilePicture == null)
+                      ? const AssetImage("assets/images/F1.jpg")
+                      : NetworkImage(
+                          _globalController.currentUser.value?.profilePicture ??
+                              ""),
             ),
             SizedBox(height: 10),
             Text(
@@ -88,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => FavorisPage()),
-                      );// Action pour "Favoris"
+                      ); // Action pour "Favoris"
                     },
                   ),
                   _buildProfileOption(
@@ -115,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SettingsPage()),
-                      );// Action pour "Paramètres"
+                      ); // Action pour "Paramètres"
                     },
                   ),
                   _buildProfileOption(
@@ -126,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => HelpPage()),
-                      );// Action pour "Aide"
+                      ); // Action pour "Aide"
                     },
                   ),
                 ],
@@ -177,17 +179,14 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Fermer la boîte de dialogue
               },
               child: Text("Annuler"),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                _auth.signOut();
-                navigator?.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false);
+                Navigator.pop(context); // Fermer la boîte de dialogue
+                _logout(); // Appeler la méthode de déconnexion
               },
               child: Text("Oui"),
             ),
@@ -195,5 +194,26 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+
+  void _logout() async {
+    try {
+      await _auth.signOut(); // Déconnexion de Firebase
+      log("Utilisateur déconnecté avec succès.");
+
+      // Rediriger vers l'écran de connexion
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      log("Erreur lors de la déconnexion : $e");
+      // Afficher un message d'erreur
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text("Erreur lors de la déconnexion : ${e.toString()}")),
+      );
+    }
   }
 }

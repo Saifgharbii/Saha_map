@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../CalendarPage.dart';
-import '../../profile/FavorisPage.dart';
 import '../HomePage.dart';
 import '../MessagesPage.dart';
 import '../../profile/SettingsPage.dart';
@@ -56,17 +55,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.favorite, color: Colors.teal),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FavorisPage()),
-              );
-            },
-          ),
-        ],
+        
       ),
 
       body: SingleChildScrollView(

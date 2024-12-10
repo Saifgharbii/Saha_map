@@ -49,16 +49,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return;
       }
 
-      if(_selectedImage == null) {
-        _showSelectImageDialog();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez sélectionner une image.')),
-        );
-        return;
-      }
+      // Ne pas imposer de validation pour l'image
+      // Le champ image est désormais optionnel
+      String? profileImageUrl = _selectedImage != null ? await _uploadImage() : null;
 
       try {
-        setState(() {
+        setState(() { 
           _isLoading = true;
         });
         userCredential = await _auth
