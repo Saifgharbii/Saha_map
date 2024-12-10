@@ -70,7 +70,6 @@ enum Governorate {
   Le_Kef
 }
 
-
 class GovernorateModel {
   final Governorate governorate;
   final double lat;
@@ -81,7 +80,6 @@ class GovernorateModel {
     required this.lat,
     required this.long,
   }) : latlng = LatLng(lat, long);
-  
 }
 
 // Map with governorate names as keys and GovernorateModel as values
@@ -307,6 +305,7 @@ class AccommodationModel {
     );
   }
 }
+
 GovernorateModel fallbackGovernorate = GovernorateModel(
   governorate: Governorate.Tunis, // Replace with a sensible default
   lat: 36.8065,
@@ -325,7 +324,6 @@ class ServiceProviderModel {
   final String photo_url;
   final GovernorateModel governorate;
 
-
   ServiceProviderModel({
     required this.id,
     required this.name,
@@ -337,12 +335,12 @@ class ServiceProviderModel {
     required this.photo_url,
     required this.governorate,
   });
-  
 
   factory ServiceProviderModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      String? governorateKey = data['governorate'];
-      GovernorateModel governorateModel = governorateMap[governorateKey] ?? fallbackGovernorate;
+    String? governorateKey = data['governorate'];
+    GovernorateModel governorateModel =
+        governorateMap[governorateKey] ?? fallbackGovernorate;
     return ServiceProviderModel(
       id: doc.id,
       name: data['name'],
@@ -364,7 +362,7 @@ class ServiceProviderModel {
       'longitude': longitude,
       'type': type,
       'photo_url': photo_url,
-      'governorate' : governorate.governorate.name,
+      'governorate': governorate.governorate.name,
     };
   }
 }
@@ -454,9 +452,10 @@ class AppointmentModel {
 class GlobalController extends GetxController {
   final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
   final RxList<DoctorModel> doctors = RxList<DoctorModel>();
-  final RxList<AccommodationModel> accommodations =
-      RxList<AccommodationModel>();
+  final RxList<AccommodationModel> accommodations =RxList<AccommodationModel>();
   final RxList<AppointmentModel> appointments = RxList<AppointmentModel>();
+  final RxList<ServiceProviderModel> service_providers =
+      RxList<ServiceProviderModel>();
   bool isDataFetched = false;
 
   // Firestore References
@@ -467,6 +466,7 @@ class GlobalController extends GetxController {
     await fetchDoctors();
     await fetchAccommodations();
     await fetchAppointments();
+    await fetchServiceProviders();
     isDataFetched = true;
   }
 
@@ -475,7 +475,6 @@ class GlobalController extends GetxController {
     doctors.value = querySnapshot.docs
         .map((doc) => DoctorModel.fromFirestore(doc))
         .toList();
-    print(doctors);
   }
 
   Future<void> fetchAccommodations() async {
@@ -491,11 +490,19 @@ class GlobalController extends GetxController {
         await _firestore.collection('appointments').get();
     List<AppointmentModel> appointmentsList = [];
     for (var doc in querySnapshot.docs) {
-      print(doc.id);
       appointmentsList.add(await AppointmentModel.fromFirestore(doc));
     }
-    print("Appointments: $appointmentsList");
     appointments.value = appointmentsList;
+  }
+
+  Future<void> fetchServiceProviders() async {
+    QuerySnapshot querySnapshot =
+        await _firestore.collection('service_providers').get();
+    List<ServiceProviderModel> serviceProvidersList = [];
+    for (var doc in querySnapshot.docs) {
+      serviceProvidersList.add(await ServiceProviderModel.fromFirestore(doc));
+    }
+    service_providers.value = serviceProvidersList;
   }
 
   // Helper method to get current user
