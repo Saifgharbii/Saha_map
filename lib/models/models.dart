@@ -216,12 +216,12 @@ class ServiceProviderModel {
   }
   Map<String, dynamic> toFirestore() {
     return {
-      'name': this.name,
-      'phone_number': this.phoneNumber,
-      'email': this.email,
-      'latitude': this.latitude,
-      'longitude': this.longitude,
-      'type': this.type,
+      'name': name,
+      'phone_number': phoneNumber,
+      'email': email,
+      'latitude': latitude,
+      'longitude': longitude,
+      'type': type,
     };
   }
 }
@@ -253,8 +253,8 @@ class DoctorWorksAtServiceProvider{
 
   Map<String, dynamic> toFirestore() {
     return {
-      'doctor_ref': this.doctor.user.id,
-      'service_provider_ref': this.serviceProvider.id,
+      'doctor_ref': doctor.user.id,
+      'service_provider_ref': serviceProvider.id,
     };
   }
 
