@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saha_map/models/models.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../CalendarPage.dart';
@@ -8,22 +9,23 @@ import '../message.dart';
 List<Map<String, dynamic>> favoriteDoctors = [];
 
 class ClinicInfoPage extends StatelessWidget {
-  final String name;
-  final String description;
-  final String address;
-  final double latitude;
-  final double longitude;
-  final String imagepath;
-  final List<Map<String, String>> avispatient;
+  final ServiceProviderModel serviceProvider ;
+  // final String name;
+  // final String description;
+  // final String address;
+  // final double latitude;
+  // final double longitude;
+  // final String imagepath;
+  // final List<Map<String, String>> avispatient;
 
   ClinicInfoPage({
-    required this.name,
-    required this.description,
-    required this.address,
-    required this.latitude,
-    required this.longitude,
-    required this.imagepath,
-    required this.avispatient,
+    required this.serviceProvider,
+    // required this.description,
+    // required this.address,
+    // required this.latitude,
+    // required this.longitude,
+    // required this.imagepath,
+    // required this.avispatient,
   });
 
   @override
@@ -52,13 +54,12 @@ class ClinicInfoPage extends StatelessWidget {
               // Section Profil
               _buildSectionTitle("Profil"),
               Text(
-                description,
+                serviceProvider.description,
                 style: TextStyle(fontSize: 16, height: 1.5),
               ),
               SizedBox(height: 16),
               // Avis des patients
               _buildSectionTitle("Avis des Patients"),
-              _buildPatientReviews(),
               SizedBox(height: 16),
             ],
           ),
@@ -130,14 +131,14 @@ class ClinicInfoPage extends StatelessWidget {
         children: [
           // Image de la clinique
           Image.asset(
-            imagepath,
+            serviceProvider.photo_url,
             height: 120,
             fit: BoxFit.cover,
           ),
           SizedBox(height: 8),
           // Nom de la clinique
           Text(
-            name,
+            serviceProvider.name,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -147,7 +148,7 @@ class ClinicInfoPage extends StatelessWidget {
           SizedBox(height: 4),
           // Adresse de la clinique
           Text(
-            address,
+            serviceProvider.governorate.governorate.name,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -174,8 +175,6 @@ class ClinicInfoPage extends StatelessWidget {
               SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
-                  // Action pour voir la localisation sur la carte
-                  _launchMap();
                 },
                 child: Text(
                   "Voir sur la carte",
@@ -211,15 +210,6 @@ class ClinicInfoPage extends StatelessWidget {
     );
   }
 
-  // Fonction pour ouvrir la carte dans Google Maps
-  void _launchMap() async {
-    final url = 'https://www.google.com/maps/search/?q=$latitude,$longitude';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not open the map';
-    }
-  }
 
   // Widget pour construire une section avec un titre
   Widget _buildSectionTitle(String title) {
@@ -234,20 +224,21 @@ class ClinicInfoPage extends StatelessWidget {
   }
 
   // Widget pour afficher les avis des patients
-  Widget _buildPatientReviews() {
-    return Column(
-      children: avispatient.map((review) {
-        return Card(
-          margin: EdgeInsets.symmetric(vertical: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage(review['image']!),
-            ),
-            title: Text(review['name']!),
-            subtitle: Text(review['review']!),
-          ),
-        );
-      }).toList(),
-    );
-  }
+
+  // Widget _buildPatientReviews() {
+  //   return Column(
+  //     children: avispatient.map((review) {
+  //       return Card(
+  //         margin: EdgeInsets.symmetric(vertical: 8),
+  //         child: ListTile(
+  //           leading: CircleAvatar(
+  //             backgroundImage: AssetImage(review['image']!),
+  //           ),
+  //           title: Text(review['name']!),
+  //           subtitle: Text(review['review']!),
+  //         ),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
 }
