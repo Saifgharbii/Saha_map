@@ -102,6 +102,7 @@ class DoctorModel {
   final Specialties speciality;
   final int experienceYears;
   final double recommendationRate;
+  final String address;
 
   DoctorModel({
     required this.user,
@@ -109,6 +110,7 @@ class DoctorModel {
     this.speciality = Specialties.GENERAL_PRACTICE,
     this.experienceYears = 1,
     this.recommendationRate = 0.0,
+    this.address = 'tunis,tunis',
   });
 
   factory DoctorModel.fromFirestore(DocumentSnapshot doc) {
@@ -119,6 +121,7 @@ class DoctorModel {
       speciality: Specialties.values.byName(data['speciality'])  ?? Specialties.GENERAL_PRACTICE,
       experienceYears: data['experience_years'] ?? 1,
       recommendationRate: data['recommendation_rate'] ?? 0.0,
+      address: data['address'] ?? 'tunis,tunis',
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -134,6 +137,7 @@ class DoctorModel {
       'speciality' : speciality,
       'experienceYears' : experienceYears,
       'recommendationRate' : recommendationRate,
+      'address' : address,
     };
   }
 

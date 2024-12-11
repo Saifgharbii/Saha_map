@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
+import 'package:saha_map/pages/authentication/RoleSelectionScreen.dart';
 import './ForgotPasswordPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -242,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PatientRegistrationPage(),
+                            builder: (context) => const RoleSelectionScreen(isRegistration: true),
                           ),
                         );
                       },

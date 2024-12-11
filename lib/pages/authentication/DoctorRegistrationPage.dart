@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,10 +9,14 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
-import './DoctorLoginPage.dart';
-import 'LoginPage.dart';
+import './LoginPage.dart';
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
 
-class _DoctorRegistrationPage extends State<DoctorRegistrationPage> {
+  @override
+  State<RegistrationPage> createState() => _RegistrationPageState();
+}
+class _RegistrationPageState extends State<RegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   File? _selectedImage;
@@ -20,9 +25,9 @@ class _DoctorRegistrationPage extends State<DoctorRegistrationPage> {
   String? _selectedGender;
   UserCredential? userCredential;
   bool _isLoading = false;
+  String ? _selectedSpecialties;
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _specialtyController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -44,24 +49,40 @@ class _DoctorRegistrationPage extends State<DoctorRegistrationPage> {
 
         int cin = int.parse(_cinController.text.trim());
         DateTime date = DateTime.parse(_dobController.text.trim());
-        String? profileImageUrl = await _uploadImage();
-
-        DoctorModel doctor = DoctorModel(
-          id: userCredential!.user!.uid,
-          name: _nameController.text.trim(),
-          specialty: _specialtyController.text.trim(),
-          address: _addressController.text.trim(),
-          experienceYears: int.parse(_experienceController.text.trim()),
-          phoneNumber: _phoneController.text.trim(),
-          email: _emailController.text.trim(),
-          role: Role.DOCTOR,
-          profilePicture: profileImageUrl,
-          cin: cin,
-          birthday: date,
+        Gender gender = _selectedGender == "Male" ? Gender.MALE : Gender.FEMALE;
+        Specialties specialties = Specialties.values.firstWhere(
+              (s) => s.toString().split('.').last == _selectedSpecialties?.toUpperCase(),
+          orElse: () => Specialties.GENERAL_PRACTICE, // Valeur par défaut si aucune correspondance
         );
 
-        await _firestore.collection('users').doc(doctor.id).set(doctor.toFirestore());
 
+        String? profileImageUrl = await _uploadImage();
+        // Créer un objet UserModel
+        UserModel user = UserModel(
+          id: userCredential!.user!.uid,
+          username: _nameController.text.trim(),
+          cin: cin,
+          birthday: date,
+          gender: gender,
+          profilePicture: profileImageUrl,
+          phoneNumber: _phoneController.text.trim(),
+          role: Role.DOCTOR,  // Assurez-vous que Role est bien défini
+        );
+
+// Créer un objet DoctorModel en utilisant UserModel
+        DoctorModel doctor = DoctorModel(
+          user: user,
+          consultationFee: 150.0,  // Remplacez par la valeur réelle
+          speciality: specialties,  // Remplacez par la spécialité réelle
+          experienceYears: int.parse(_experienceController.text.trim()),
+          recommendationRate: 4.5,  // Remplacez par la note réelle
+          address: _addressController.text.trim(),
+        );
+
+        await _firestore.collection('users').doc(user.id).set(user.toFirestore());
+        // Ajouter à la collection patients
+        PatientModel patient = PatientModel(user: user);
+        await _firestore.collection('doctors').doc(user.id).set(doctor.toFirestore());
         setState(() {
           _isLoading = false;
         });
@@ -242,16 +263,76 @@ class _DoctorRegistrationPage extends State<DoctorRegistrationPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "Spécialité",
-                      icon: Icons.medical_services_outlined,
-                      controller: _specialtyController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La spécialité est requise.';
-                        }
-                        return null;
-                      },
+                    _buildDatePicker(),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Genre',
+                          border: InputBorder.none,
+                        ),
+                        value: _selectedGender,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedGender = newValue;
+                          });
+                        },
+                        items: <String>['Male', 'Female']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDatePicker(),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Spécialité',
+                          border: InputBorder.none,
+                        ),
+                        value: _selectedSpecialties,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedSpecialties = newValue;
+                          });
+                        },
+                        items: <String>['Male', 'Female']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'LoginPage.dart';
 import 'DoctorRegistrationPage.dart';
-import 'LoginPage.dart';
 import 'PatientRegistrationPage.dart';
+import 'AssistantRegistrationPage.dart';
 // Importez également les pages pour Assistant, Clinique, Agent Immobilier, etc.
 
 class RoleSelectionScreen extends StatelessWidget {
@@ -104,7 +104,33 @@ class RoleSelectionScreen extends StatelessWidget {
         case 'Assistant':
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
+            MaterialPageRoute(builder: (context) => const
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            LoginPage()),
           );
           break;
         default:
