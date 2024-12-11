@@ -9,43 +9,44 @@ import 'DoctorInfoPage.dart';
 import '../MessagesPage.dart';
 import '../../profile/SettingsPage.dart';
 import '../../../models/models.dart';
-import '../../../main.dart';
 
 
 
 class ResultPage extends StatelessWidget {
-  final String option;
-  final String governorate;
-  final String speciality;
-  final GlobalController globalController = Get.find<GlobalController>();
+  final String selectedServiceProviderType;
+  final GovernorateModel governorate;
+  final Specialties speciality;
+
+  final GlobalController globalController = Get.find();
+
 
   ResultPage({
-    required this.option,
+    required this.selectedServiceProviderType,
     required this.governorate,
     required this.speciality,
   });
-  List<ServiceProviderModel> serviceProvidersList = globalController.service_providers.value;
+
 
   @override
   Widget build(BuildContext context) {
-    // Filtrer les lieux en fonction des critères
-    final filteredLocations = locations.where((location) {
-      // Vérifier si la spécialité correspond dans specialitybydoctor
-      bool matchesSpeciality = location['specialitybydoctor']
-          .any((doctor) => doctor['speciality'] == speciality);
-      bool matchesGovernorate =
-          location['address'].toLowerCase().contains(governorate.toLowerCase());
-      bool matchesOption = option == 'Clinique'
-          ? location['name'].contains('Clinique')
-          : location['name'].contains('Cabinet');
-      return matchesSpeciality && matchesGovernorate && matchesOption;
-    }).toList();
+    // List<ServiceProviderModel> serviceProvidersList = globalController.service_providers.value;
+    // List<DoctorModel> doctorsList = globalController.doctors.value;
+    List<DoctorWorksAtServiceProvider>  doctorWorksAtServiceProviderList = globalController.doctorWorksAtServiceProviders.value;
+
+    final List<DoctorWorksAtServiceProvider> filtred_doctorWorksAtServiceProviderList = [] ;
+    for (var docSer in doctorWorksAtServiceProviderList) {
+      if (docSer.doctor.speciality == speciality &&
+        docSer.serviceProvider.type == selectedServiceProviderType &&
+        docSer.serviceProvider.governorate == governorate   ) {
+          filtred_doctorWorksAtServiceProviderList.add(docSer);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey.shade50,
         title: Text(
-          governorate,
+          governorate.governorate.name,
           style: TextStyle(color: Colors.teal),
         ),
         iconTheme: IconThemeData(color: Colors.teal),
@@ -56,10 +57,8 @@ class ResultPage extends StatelessWidget {
             flex: 1,
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: filteredLocations.isNotEmpty
-                    ? LatLng(filteredLocations.first['latitude'],
-                        filteredLocations.first['longitude'])
-                    : LatLng(36.8065, 10.1815), // Centre par défaut : Tunis
+                initialCenter: filtred_doctorWorksAtServiceProviderList.isNotEmpty
+                    ? governorate.latlng : governorateMap["Tunis"]!.latlng, // Centre par défaut : Tunis
                 initialZoom: 12.0,
               ),
               children: [
@@ -69,36 +68,35 @@ class ResultPage extends StatelessWidget {
                   subdomains: ['a', 'b', 'c'],
                 ),
                 MarkerLayer(
-                  markers: filteredLocations.map((location) {
+                  markers: filtred_doctorWorksAtServiceProviderList.map((docSer) {
                     return Marker(
                       width: 80.0,
                       height: 80.0,
                       point:
-                          LatLng(location['latitude'], location['longitude']),
+                          LatLng(docSer.serviceProvider.latitude, docSer.serviceProvider.longitude),
                       child: GestureDetector(
                         onTap: () {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text(location['name']),
+                              title: Text(docSer.serviceProvider.name),
                               content: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    "Adresse : ${location['address']}",
+                                    "Adresse : ${'address nth'}",
                                   ),
                                   SizedBox(height: 10),
-                                  Text("Médecins disponibles :"),
-                                  ...location['specialitybydoctor']
-                                      .map<Widget>((doctor) => ListTile(
+                                  const Text("Médecins disponibles :"),
+                                  ...filtred_doctorWorksAtServiceProviderList.map<Widget>((docSer) => ListTile(
                                             leading: CircleAvatar(
                                               backgroundImage:
-                                                  AssetImage(doctor['image']),
+                                                  AssetImage(docSer.doctor.user.profilePicture!),
                                             ),
-                                            title: Text(doctor['name']),
+                                            title: Text(docSer.doctor.user.username),
                                             subtitle:
-                                                Text(doctor['speciality']),
+                                                Text(docSer.doctor.speciality.name),
                                           ))
                                       .toList(),
                                 ],
@@ -127,53 +125,55 @@ class ResultPage extends StatelessWidget {
           Expanded(
             flex: 1,
             child: ListView.builder(
-              itemCount: filteredLocations.length,
+              itemCount: filtred_doctorWorksAtServiceProviderList.length,
               itemBuilder: (context, index) {
-                final location = filteredLocations[index];
+                final docSer = filtred_doctorWorksAtServiceProviderList[index];
                 return ListTile(
                   leading: Icon(Icons.medical_services,
                       color: Colors.teal, size: 30),
                   title: Text(
-                    location['name'],
+                    docSer.serviceProvider.name, //to be verified
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(location['address']),
+                  subtitle: Text('ADDRESS NTHHH'),
                   trailing: Icon(
                     Icons.arrow_forward_ios,
                     color: Colors.grey,
                     size: 16,
                   ),
                   onTap: () {
-                    if (option == 'Clinique') {
+                    if (selectedServiceProviderType == 'CLINIC') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ClinicInfoPage(
-                            name: location['name'],
-                            address: location['address'],
-                            latitude: location['latitude'],
-                            longitude: location['longitude'],
-                            description: location['description'],
-                            imagepath: location['imagepath'],
-                            avispatient: location['avispatient'],
+                            docSer : docSer,
+                            // name: location['name'],
+                            // address: location['address'],
+                            // latitude: location['latitude'],
+                            // longitude: location['longitude'],
+                            // description: location['description'],
+                            // imagepath: location['imagepath'],
+                            // avispatient: location['avispatient'],
                           ),
                         ),
                       );
-                    } else if (option == 'Cabinet') {
+                    } else if (selectedServiceProviderType == 'CABINET') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DoctorInfoPage(
-                            name: location['name'],
-                            speciality: speciality,
-                            address: location['address'],
-                            latitude: location['latitude'],
-                            longitude: location['longitude'],
-                            description: location['description'],
-                            imagepath: location['imagepath'],
-                            avispatient: location['avispatient'],
-                            doctorAvailableTimesByDate:
-                                location['doctorAvailableTimesByDate'],
+                            docSer: docSer
+                            // name: location['name'],
+                            // speciality: speciality,
+                            // address: location['address'],
+                            // latitude: location['latitude'],
+                            // longitude: location['longitude'],
+                            // description: location['description'],
+                            // imagepath: location['imagepath'],
+                            // avispatient: location['avispatient'],
+                            // doctorAvailableTimesByDate:
+                            //     location['doctorAvailableTimesByDate'],
                           ),
                         ),
                       );

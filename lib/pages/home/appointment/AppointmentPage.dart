@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_common/get_reset.dart';
+import 'package:saha_map/models/models.dart';
 
 import '../CalendarPage.dart';
 import '../MessagesPage.dart';
@@ -11,8 +13,8 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  String selectedOption = ""; // Cabinet ou Clinique
-  String selectedGovernorate = ""; // Gouvernorat
+  String selectedServiceProviderType = ""; // Cabinet ou Clinique
+  late GovernorateModel? selectedGovernorate ; // Gouvernorat
   String selectedSpeciality = ""; // Spécialité
 
   final List<String> _governorates = [
@@ -81,14 +83,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 SelectOptionCard(
                   icon: Icons.local_hospital,
                   label: "Clinique",
-                  isActive: selectedOption == "Clinique",
-                  onPressed: () => setState(() => selectedOption = "Clinique"),
+                  isActive: selectedServiceProviderType == "CLINIC",
+                  onPressed: () => setState(() => selectedServiceProviderType = "CLINIC"),
                 ),
                 SelectOptionCard(
                   icon: Icons.medical_services,
                   label: "Cabinet",
-                  isActive: selectedOption == "Cabinet",
-                  onPressed: () => setState(() => selectedOption = "Cabinet"),
+                  isActive: selectedServiceProviderType == "CABINET",
+                  onPressed: () => setState(() => selectedServiceProviderType = "CABINET"),
                 ),
               ],
             ),
@@ -98,7 +100,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     DropdownButtonFormField<String>(
     decoration: InputDecoration(
     filled: true,
-    fillColor: selectedGovernorate.isEmpty ? Colors.grey.shade300 : Colors.teal.shade100,
+    fillColor: selectedGovernorate == null? Colors.grey.shade300 : Colors.teal.shade100,
     border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: BorderSide.none,
@@ -111,9 +113,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     child: Text(value),
     );
     }).toList(),
-    onChanged: (value) => setState(() {
-    selectedGovernorate = value!;
-    }),
+    onChanged: (value) => setState(() {selectedGovernorate = governorateMap[value]!; }),
     ),
             SizedBox(height: 30),
             Text("Spécialités", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -141,7 +141,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (selectedOption.isEmpty || selectedGovernorate.isEmpty || selectedSpeciality.isEmpty) {
+                  if (selectedServiceProviderType.isEmpty || selectedGovernorate == null || selectedSpeciality.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Veuillez remplir tous les champs !")),
                     );
@@ -150,8 +150,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResultPage(
-                          option: selectedOption,
-                          governorate: selectedGovernorate,
+                          option: selectedServiceProviderType,
+                          governorate: selectedGovernorate!,
                           speciality: selectedSpeciality,
                         ),
                       ),
@@ -160,10 +160,10 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                child: Text(
+                child: const Text(
                   "Rechercher",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
