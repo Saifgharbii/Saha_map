@@ -147,7 +147,7 @@ class ResultPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ClinicInfoPage(
-                            docSer : docSer,
+                            serviceProvider : docSer.serviceProvider,
                             // name: location['name'],
                             // address: location['address'],
                             // latitude: location['latitude'],

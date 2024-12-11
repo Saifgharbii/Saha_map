@@ -328,6 +328,7 @@ class ServiceProviderModel {
   final String photo_url;
   final String address;
   
+  final String description;
 
   ServiceProviderModel({
     required this.id,
@@ -338,6 +339,7 @@ class ServiceProviderModel {
     this.longitude = 10.1815,
     required this.photo_url,
     required this.governorate,
+    this.description = "nothing to display",
     required this.address,
   });
 
@@ -402,6 +404,47 @@ class DoctorWorksAtServiceProvider {
     return {
       'doctor_ref': doctor.user.id,
       'service_provider_ref': serviceProvider.id,
+    };
+  }
+}
+
+class FavoritsDoctorsModel {
+  final List<DoctorModel> listOfFavDoctors;
+  final PatientModel patient;
+
+  FavoritsDoctorsModel({
+    required this.patient,
+    this.listOfFavDoctors = const [],
+  });
+
+  /// Creates an instance of `FavoritsDoctorsModel` from Firestore data
+  static Future<FavoritsDoctorsModel> fromFirestore(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+
+    // Fetch patient data using their reference
+    final patientRef = data['patient_ref'] as DocumentReference;
+    final patientSnapshot = await patientRef.get();
+    final patient = PatientModel.fromFirestore(patientSnapshot);
+
+    // Fetch list of favorite doctors
+    final List<dynamic> doctorRefs = data['list_of_fav_doctors'] ?? [];
+    final List<DoctorModel> favDoctors = [];
+    for (final docRef in doctorRefs) {
+      final doctorSnapshot = await (docRef as DocumentReference).get();
+      favDoctors.add(DoctorModel.fromFirestore(doctorSnapshot));
+    }
+
+    return FavoritsDoctorsModel(
+      patient: patient,
+      listOfFavDoctors: favDoctors,
+    );
+  }
+
+  /// Converts `FavoritsDoctorsModel` to Firestore format
+  Map<String, dynamic> toFirestore() {
+    return {
+      'patient_ref': patient.user.id,
+      'list_of_fav_doctors': listOfFavDoctors.map((doctor) => doctor.user.id).toList(),
     };
   }
 }
