@@ -6,16 +6,18 @@ import '../profile/SettingsPage.dart';
 import 'message.dart';
 
 class MessagesPage extends StatelessWidget {
+  const MessagesPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Messagerie',
           style: TextStyle(color: Colors.teal),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -31,7 +33,7 @@ class MessagesPage extends StatelessWidget {
             TextField(
               decoration: InputDecoration(
                 hintText: "Rechercher une discussion",
-                prefixIcon: Icon(Icons.search, color: Colors.teal),
+                prefixIcon: const Icon(Icons.search, color: Colors.teal),
                 filled: true,
                 fillColor: Colors.grey.shade200,
                 border: OutlineInputBorder(
@@ -40,7 +42,7 @@ class MessagesPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Liste des discussions
             ConversationCard(
               name: "Dr. Rim Maala",
@@ -55,7 +57,7 @@ class MessagesPage extends StatelessWidget {
                     builder: (context) => MessageDetailsPage(
                       name: "Dr. Rim Maala",
                       avatar: 'assets/images/doctor1.webp',
-                      messages: [
+                      messages: const [
                         {
                           'isMe': false,
                           'text': "Bonjour, avez-vous reçu vos résultats ?",
@@ -75,7 +77,7 @@ class MessagesPage extends StatelessWidget {
               },
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ConversationCard(
               name: "Dr. Sami Fourti",
               specialty: "Cardiologie",
@@ -89,7 +91,7 @@ class MessagesPage extends StatelessWidget {
                     builder: (context) => MessageDetailsPage(
                       name: "Dr. Sami Fourti",
                       avatar: 'assets/images/doctor2.jpg',
-                      messages: [
+                      messages: const [
                         {
                           'isMe': false,
                           'text': "Je peux vous voir jeudi prochain.",
@@ -108,7 +110,7 @@ class MessagesPage extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ConversationCard(
               name: "Clinique La Rose",
               specialty: "Cardiologie",
@@ -122,7 +124,7 @@ class MessagesPage extends StatelessWidget {
                     builder: (context) => MessageDetailsPage(
                       name: "Clinique La Rose",
                       avatar: 'assets/images/rose.jpg',
-                      messages: [
+                      messages: const [
                         {
                           'isMe': true,
                           'text': "Bonjour, je souhaiterais confirmer mon rendez-vous de demain matin avec le cardiologue.",
@@ -153,7 +155,7 @@ class MessagesPage extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ConversationCard(
               name: "Dr. Narjess Hadj Mohamed",
               specialty: "Cardiologie",
@@ -167,7 +169,7 @@ class MessagesPage extends StatelessWidget {
                     builder: (context) => MessageDetailsPage(
                       name: "Dr. Narjes Hadj Mohamed",
                       avatar: 'assets/images/doctor7.jpg',
-                      messages: [
+                      messages: const [
                         {'isMe': false,
                           'text': '',
                           'time': '19:50',
@@ -179,7 +181,7 @@ class MessagesPage extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ConversationCard(
               name: "Dr. Sirine Charrada",
               specialty: "Dermatologie",
@@ -193,7 +195,7 @@ class MessagesPage extends StatelessWidget {
                     builder: (context) => MessageDetailsPage(
                       name: "Dr. Sirine Charrada",
                       avatar: 'assets/images/doctor3.jpg',
-                      messages: [
+                      messages: const [
                         {
                           'isMe': true,
                           'text': "Bonjour Docteur, mon problème de peau s’aggrave malgré les soins. Que me conseillez-vous ?",
@@ -263,7 +265,7 @@ class MessagesPage extends StatelessWidget {
           break;
           }
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
@@ -282,7 +284,7 @@ class ConversationCard extends StatelessWidget {
   final String time;
   final VoidCallback onTap;
 
-  ConversationCard({
+  const ConversationCard({super.key, 
     required this.name,
     required this.specialty,
     required this.lastMessage,
@@ -298,7 +300,7 @@ class ConversationCard extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 4,
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -307,19 +309,19 @@ class ConversationCard extends StatelessWidget {
                 radius: 30,
                 backgroundImage: AssetImage(avatar),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: TextStyle(color: Colors.teal,fontWeight: FontWeight.bold)),
-                    Text(specialty, style: TextStyle(color: Colors.grey)),
-                    SizedBox(height: 8),
+                    Text(name, style: const TextStyle(color: Colors.teal,fontWeight: FontWeight.bold)),
+                    Text(specialty, style: const TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 8),
                     Text(lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
-              Text(time, style: TextStyle(color: Colors.grey)),
+              Text(time, style: const TextStyle(color: Colors.grey)),
             ],
           ),
         ),

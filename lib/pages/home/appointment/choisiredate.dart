@@ -10,7 +10,7 @@ class ChoisireDatePage extends StatefulWidget {
   // Liste de maps pour stocker les horaires disponibles par date
   final List<Map<String, List<String>>> doctorAvailableTimesByDate;
 
-  ChoisireDatePage({
+  const ChoisireDatePage({super.key, 
     required this.doctorName,
     required this.doctorAvailableTimesByDate,
   });
@@ -62,7 +62,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
         });
         _updateAvailableTimes(selectedDay);
       },
-      calendarStyle: CalendarStyle(
+      calendarStyle: const CalendarStyle(
         todayDecoration: BoxDecoration(
           color: Colors.blue,
           shape: BoxShape.circle,
@@ -73,7 +73,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
         ),
         weekendTextStyle: TextStyle(color: Colors.red),
       ),
-      headerStyle: HeaderStyle(
+      headerStyle: const HeaderStyle(
         formatButtonVisible: false, // Désactive le bouton de format (mois/semaines)
         titleCentered: true, // Centrer le titre du mois
       ),
@@ -86,7 +86,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
     // Liste des horaires de 8h à 17h
     List<String> allHours = [];
     for (int i = 8; i <= 17; i++) {
-      allHours.add('${i}:00');
+      allHours.add('$i:00');
     }
 
     return Wrap(
@@ -105,7 +105,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
             }
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected
                   ? Colors.blue
@@ -141,7 +141,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           decoration: InputDecoration(
             labelText: 'Âge',
@@ -151,13 +151,13 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
           ),
           keyboardType: TextInputType.number,
         ),
-        SizedBox(height: 10),
-        Text('Genre', style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        const Text('Genre', style: TextStyle(fontWeight: FontWeight.bold)),
         Row(
           children: [
             Expanded(
               child: RadioListTile<String>(
-                title: Text("Masculin"),
+                title: const Text("Masculin"),
                 value: "Masculin",
                 groupValue: _selectedGender,
                 onChanged: (val) {
@@ -169,7 +169,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
             ),
             Expanded(
               child: RadioListTile<String>(
-                title: Text("Féminin"),
+                title: const Text("Féminin"),
                 value: "Féminin",
                 groupValue: _selectedGender,
                 onChanged: (val) {
@@ -207,14 +207,14 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Erreur'),
-            content: Text('Veuillez sélectionner une heure disponible.'),
+            title: const Text('Erreur'),
+            content: const Text('Veuillez sélectionner une heure disponible.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -242,10 +242,10 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.doctorName}',style: TextStyle(color: Colors.teal)),
+        title: Text(widget.doctorName,style: const TextStyle(color: Colors.teal)),
         backgroundColor: Colors.grey.shade50,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -258,20 +258,20 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildDateSelector(),
-              SizedBox(height: 20),
-              Text('Heures disponibles', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              const Text('Heures disponibles', style: TextStyle(fontWeight: FontWeight.bold)),
               buildTimeSelector(),
-              SizedBox(height: 20),
-              Text('Détails du patient', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              const Text('Détails du patient', style: TextStyle(fontWeight: FontWeight.bold)),
               buildPatientDetailsForm(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _confirmAppointment,
-                child: Text('Demander un rendez-vous',style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
+                child: Text('Demander un rendez-vous',style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

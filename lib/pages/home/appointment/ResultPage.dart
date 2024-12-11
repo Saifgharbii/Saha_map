@@ -49,7 +49,7 @@ class ResultPage extends StatelessWidget {
           governorate.governorate.name,
           style: TextStyle(color: Colors.teal),
         ),
-        iconTheme: IconThemeData(color: Colors.teal),
+        iconTheme: const IconThemeData(color: Colors.teal),
       ),
       body: Column(
         children: [
@@ -104,13 +104,13 @@ class ResultPage extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text("Fermer"),
+                                  child: const Text("Fermer"),
                                 ),
                               ],
                             ),
                           );
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.location_on,
                           color: Colors.red,
                           size: 40.0,

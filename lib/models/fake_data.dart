@@ -28,10 +28,10 @@ class TestDataGenerator {
       'cin': 10000000 + _random.nextInt(90000000),
       'birthday': getRandomDate(startYear: 1960, endYear: 2000),
       'gender': getRandomEnumValue(Gender.values).name,
-      'profile_picture': _faker.image.loremPicsum(width: 200, height: 200),
       'phone_number': '+216${_random.nextInt(10000000) + 90000000}',
       'role': role.name,
     };
+
   }
 
   // Generate fake doctor data

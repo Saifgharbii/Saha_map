@@ -12,14 +12,14 @@ class _FavorisPageState extends State<FavorisPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Médecins Favoris",
           style: TextStyle(color: Colors.teal),
         ),
         centerTitle: true,
         backgroundColor: Colors.grey[100],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },

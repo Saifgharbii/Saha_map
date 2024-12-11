@@ -5,24 +5,26 @@ import '../home/HomePage.dart';
 import '../home/MessagesPage.dart';
 
 class LanguePage extends StatelessWidget {
-  final List<Map<String, String>> languages = [
-    {'name': 'Français', 'flag': 'assets/flags/france.png'},
-    {'name': 'English', 'flag': 'assets/flags/usa.png'},
-    {'name': 'العربية', 'flag': 'assets/flags/tunisia.png'},
-    {'name': 'Español', 'flag': 'assets/flags/spain.png'},
-    {'name': 'Deutsch', 'flag': 'assets/flags/germany.png'},
-  ];
+  final List<Map<String, String>> languages = const [
+  {'name': 'Français', 'flag': 'assets/flags/france.png'},
+  {'name': 'English', 'flag': 'assets/flags/usa.png'},
+  {'name': 'العربية', 'flag': 'assets/flags/tunisia.png'},
+  {'name': 'Español', 'flag': 'assets/flags/spain.png'},
+  {'name': 'Deutsch', 'flag': 'assets/flags/germany.png'},
+];
+
+  const LanguePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Langue',
           style: TextStyle(color: Colors.teal),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -31,7 +33,7 @@ class LanguePage extends StatelessWidget {
         elevation: 0,
       ),
       body: ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         itemCount: languages.length,
         itemBuilder: (context, index) {
           return Column(
@@ -44,15 +46,15 @@ class LanguePage extends StatelessWidget {
                 ),
                 title: Text(
                   languages[index]['name']!,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                 onTap: () {
                   // Action pour changer la langue
                   print("Langue sélectionnée : ${languages[index]['name']}");
                 },
               ),
-              Divider(),
+              const Divider(),
             ],
           );
         },
@@ -90,7 +92,7 @@ class LanguePage extends StatelessWidget {
     }
     }
     },
-    items: [
+    items: const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),

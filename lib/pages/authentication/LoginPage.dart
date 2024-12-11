@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
+import 'package:saha_map/pages/authentication/RoleSelectionScreen.dart';
 import './ForgotPasswordPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../home/HomePage.dart';
-import 'RegistrationPage.dart';
+import 'PatientRegistrationPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
 
@@ -242,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(),
+                            builder: (context) => const RoleSelectionScreen(isRegistration: true),
                           ),
                         );
                       },
