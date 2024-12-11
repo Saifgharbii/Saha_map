@@ -193,7 +193,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
       final uploadUrl = await _uploadImageToImgur(_selectedImage!);
       return uploadUrl;
     }
-    return null;
+    else {
+        
+      return null;
+    }
+    
   }
 
   @override

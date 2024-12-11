@@ -4,175 +4,178 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
 import 'LoginPage.dart';
 
-class _AssistantClinicRegistrationPage extends State<AssistantClinicRegistrationPage> {
+class AssistantClinicRegistrationPage extends StatefulWidget {
+  const AssistantClinicRegistrationPage({Key? key}) : super(key: key);
+
+  @override
+  _AssistantClinicRegistrationPageState createState() =>
+      _AssistantClinicRegistrationPageState();
+}
+
+class _AssistantClinicRegistrationPageState
+    extends State<AssistantClinicRegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  File? _selectedImage;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  bool _isPasswordVisible = false;
-  UserCredential? userCredential;
-  bool _isLoading = false;
 
+  String? _selectedGender;
+  DateTime? _selectedDate;
+  bool _isLoading = false;
+  File? _selectedImage;
+
+  // Text editing controllers pour la clinique
   final TextEditingController _clinicNameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _clinicaddressController = TextEditingController();
+  final TextEditingController _clinicphoneController = TextEditingController();
+  final TextEditingController _clinicemailController = TextEditingController();
+  final TextEditingController _clinicGovernorateController = TextEditingController();
+
+  // Text editing controllers pour l'assistant
+  final TextEditingController _assistantNameController = TextEditingController();
+  final TextEditingController _assistantEmailController = TextEditingController();
+  final TextEditingController _assistantPhoneController = TextEditingController();
+  final TextEditingController _assistantCinController = TextEditingController();
+  final TextEditingController _assistantPasswordController = TextEditingController();
+  final TextEditingController _assistantDobController = TextEditingController();
+
+  // Upload image sur Imgur
+  Future<String?> _uploadImageToImgur(File imageFile) async {
+    const clientId = '9f9ec81a2a40523';
+    final uri = Uri.parse('https://api.imgur.com/3/image');
+    try {
+      var request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Client-ID $clientId'
+        ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseData);
+        return jsonData['data']['link'];
+      }
+    } catch (e) {
+      print('Erreur lors de l\'upload : $e');
+    }
+    return null;
+  }
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
+      if (_selectedImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Veuillez ajouter une image")),
+        );
+        return;
+      }
+
       try {
         setState(() {
           _isLoading = true;
         });
-        userCredential = await _auth.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
+          email: _assistantEmailController.text.trim(),
+          password: _assistantPasswordController.text.trim(),
         );
 
-        String? profileImageUrl = await _uploadImage();
+        String? profileImageUrl = await _uploadImageToImgur(_selectedImage!);
 
-        ServiceProviderModel assistantClinic = ServiceProviderModel(
-          id: userCredential!.user!.uid,
-          name: _clinicNameController.text.trim(),
-          address: _addressController.text.trim(),
-          phoneNumber: _phoneController.text.trim(),
-          role: Role., // Role par défaut
+        DateTime date = DateTime.parse(_assistantDobController.text.trim());
+
+        // Création du modèle utilisateur pour l'assistant
+        UserModel user = UserModel(
+          id: userCredential.user!.uid,
+          username: _assistantNameController.text.trim(),
+          cin: int.parse(_assistantCinController.text.trim()),
+          phoneNumber: _assistantPhoneController.text.trim(),
+          role: Role.CLINIC_AGENT,
           profilePicture: profileImageUrl,
+          birthday: date,
+          gender: _selectedGender == "Male" ? Gender.MALE : Gender.FEMALE,
         );
 
-        await _firestore.collection('users').doc(assistantClinic.id).set(assistantClinic.toFirestore());
+        await _firestore
+            .collection('users')
+            .doc(user.id)
+            .set(user.toFirestore());
 
-        // Ajouter à la collection assistants_clinics
-        ServiceProviderModel assistant = ServiceProviderModel(
-          id: assistantClinic.id,
-          name: assistantClinic.clinicName,
-          address: assistantClinic.address,
-          phoneNumber: assistantClinic.phoneNumber,
-          role: assistantClinic.role,
-          profilePicture: assistantClinic.profilePicture,
+        ServiceProviderModel clinic = ServiceProviderModel(
+          id: userCredential.user!.uid,
+          name: _clinicNameController.text.trim(),
+          address: _clinicaddressController.text.trim(),
+          phoneNumber: _clinicphoneController.text.trim(),
+          governorate: _clinicGovernorateController.text.trim(),
+          photo_url: profileImageUrl ?? '',
+          email: _clinicemailController.text.trim(),
         );
-        await _firestore.collection('assistants_clinics').doc(assistant.id).set(assistant.toFirestore());
+
+        await _firestore
+            .collection('service_providers')
+            .doc(clinic.id)
+            .set(clinic.toFirestore());
 
         setState(() {
           _isLoading = false;
         });
 
-        GlobalController().setCurrentUser(assistantClinic);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Inscription réussie !')),
+        );
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Inscription réussie!')),
-          );
-        }
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } on FirebaseAuthException catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.message ?? "Erreur lors de l'inscription.")),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? "Erreur")),
+        );
       }
-    }
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    await _checkPermission();
-    final pickedFile = await ImagePicker().pickImage(source: source);
-
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
     }
   }
 
   void _showSelectImageDialog() {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Choisir une image'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Prendre une photo'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Choisir une photo'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.gallery);
-                },
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (context) => AlertDialog(
+        title: const Text('Choisir une image'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Prendre une photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Galerie'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Future<void> _checkPermission() async {
-    var status = await Permission.storage.status;
-    var cameraStatus = await Permission.camera.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
     }
-    if (!cameraStatus.isGranted) {
-      await Permission.camera.request();
-    }
-  }
-
-  Future<String?> _uploadImageToImgur(File imageFile) async {
-    const clientId = '9f9ec81a2a40523';
-    final uri = Uri.parse('https://api.imgur.com/3/image');
-    try {
-      // Create multipart request
-      var request = http.MultipartRequest('POST', uri);
-      request.headers['Authorization'] = 'Client-ID $clientId';
-      request.files.add(await http.MultipartFile.fromPath(
-        'image',
-        imageFile.path,
-      ));
-
-      // Send request
-      final response = await request.send();
-
-      if (response.statusCode == 200) {
-        final responseData = await response.stream.bytesToString();
-        final jsonData = jsonDecode(responseData);
-        return jsonData['data']['link']; // Return the URL of the uploaded image
-      } else {
-        print('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Upload failed: $e');
-    }
-    return null;
-  }
-
-  Future<String?> _uploadImage() async {
-    _checkPermission();
-    if (_selectedImage != null) {
-      final uploadUrl = await _uploadImageToImgur(_selectedImage!);
-      return uploadUrl;
-    }
-    return null;
   }
 
   @override
@@ -187,189 +190,100 @@ class _AssistantClinicRegistrationPage extends State<AssistantClinicRegistration
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFFFFFFF), // Blanc
-              Color(0xFFFFFFFF), // Blanc
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: _showSelectImageDialog,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey[300],
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(_selectedImage!)
-                            : null,
-                        child: _selectedImage == null
-                            ? const Icon(Icons.camera_alt, size: 40, color: Colors.grey)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(height: 13),
-                    const Text(
-                      "Créer un nouveau compte pour Assistant Clinique",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    _buildTextField(
-                      label: "Nom de la clinique",
-                      icon: Icons.local_hospital_outlined,
-                      controller: _clinicNameController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Le nom de la clinique est requis.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "Adresse",
-                      icon: Icons.location_on_outlined,
-                      controller: _addressController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'L\'adresse est requise.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "Téléphone",
-                      icon: Icons.phone_outlined,
-                      controller: _phoneController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Le téléphone est requis.';
-                        }
-                        if (!RegExp(r"^\d{8}$").hasMatch(value)) {
-                          return 'Veuillez entrer un numéro de téléphone valide.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "Email",
-                      icon: Icons.email_outlined,
-                      controller: _emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'L\'email est requis.';
-                        }
-                        if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-                          return 'Veuillez entrer un email valide.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildPasswordField(),
-                    const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: _signup,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF21B7A8),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 56),
-                      ),
-                      child: const Text(
-                        "Créer un compte",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: _showSelectImageDialog,
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage: _selectedImage != null
+                        ? FileImage(_selectedImage!)
+                        : null,
+                    child: _selectedImage == null
+                        ? const Icon(Icons.camera_alt,
+                            size: 40, color: Colors.grey)
+                        : null,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: _selectedGender,
+                  items: const [
+                    DropdownMenuItem(value: "Male", child: Text("Homme")),
+                    DropdownMenuItem(value: "Female", child: Text("Femme")),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedGender = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Genre",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null ? "Veuillez sélectionner un genre" : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _clinicNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nom de la clinique',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value!.isEmpty ? 'Champ requis' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+  controller: _clinicGovernorateController,
+  decoration: const InputDecoration(
+    labelText: 'Gouvernorat',
+    border: OutlineInputBorder(),
+  ),
+  validator: (value) => value!.isEmpty ? 'Champ requis' : null,
+),
+                TextFormField(
+                  controller: _clinicaddressController,
+                  decoration: const InputDecoration(
+                    labelText: 'Adresse de la clinique',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value!.isEmpty ? 'Champ requis' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _clinicphoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Téléphone de la clinique',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) => value!.isEmpty ? 'Champ requis' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _clinicemailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email de la clinique',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) => value!.isEmpty ? 'Champ requis' : null,
+                ),
+                ElevatedButton(
+                  onPressed: _signup,
+                  child: const Text('Créer un compte'),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
-
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.black),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFF5F5F5),
-      ),
-      validator: validator,
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return TextFormField(
-      controller: _passwordController,
-      obscureText: !_isPasswordVisible,
-      decoration: InputDecoration(
-        labelText: "Mot de passe",
-        prefixIcon: const Icon(Icons.lock_outline, color: Colors.black),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            setState(() {
-              _isPasswordVisible = !_isPasswordVisible;
-            });
-          },
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFF5F5F5),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Le mot de passe est requis.';
-        }
-        return null;
-      },
-    );
-  }
-}
-
-class AssistantClinicRegistrationPage extends StatefulWidget {
-  const AssistantClinicRegistrationPage({super.key});
-
-  @override
-  _AssistantClinicRegistrationPage createState() =>
-      _AssistantClinicRegistrationPage();
 }

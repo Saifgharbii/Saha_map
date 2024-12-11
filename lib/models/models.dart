@@ -264,11 +264,11 @@ class DoctorModel {
       'profile_picture': user.profilePicture,
       'phone_number': user.phoneNumber,
       'role': user.role.name,
-      'consultationFee' : consultationFee,
-      'speciality' : speciality,
-      'experienceYears' : experienceYears,
-      'recommendationRate' : recommendationRate,
-      'address' : address,
+      'consultationFee': consultationFee,
+      'speciality': speciality,
+      'experienceYears': experienceYears,
+      'recommendationRate': recommendationRate,
+      'address': address,
     };
   }
 }
@@ -316,29 +316,29 @@ class AccommodationModel {
   }
 }
 
-
 // Service Provider Model
 class ServiceProviderModel {
   final String id;
   final String name;
   final String phoneNumber;
   final String email;
-  final double latitude;
-  final double longitude;
-  final String type;
-  final String photo_url;
   final GovernorateModel governorate;
+  final double latitude ;
+  final double longitude;
+  final String photo_url;
+  final String address;
+  
 
   ServiceProviderModel({
     required this.id,
     required this.name,
     required this.phoneNumber,
     required this.email,
-    required this.latitude,
-    required this.longitude,
-    required this.type,
+    this.latitude = 36.8065, 
+    this.longitude = 10.1815,
     required this.photo_url,
     required this.governorate,
+    required this.address,
   });
 
   factory ServiceProviderModel.fromFirestore(DocumentSnapshot doc) {
@@ -353,9 +353,9 @@ class ServiceProviderModel {
       email: data['email'],
       latitude: data['latitude'],
       longitude: data['longitude'],
-      type: data['type'],
       photo_url: data['photo_url'],
       governorate: governorateModel,
+      address: data['address'],
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -365,7 +365,6 @@ class ServiceProviderModel {
       'email': email,
       'latitude': latitude,
       'longitude': longitude,
-      'type': type,
       'photo_url': photo_url,
       'governorate': governorate.governorate.name,
     };
@@ -387,14 +386,16 @@ class DoctorWorksAtServiceProvider {
 
     // Fetch doctor and service provider data using their references
     final doctorRef = data['doctor_ref'] as DocumentReference;
-    final serviceProviderRef = data['service_provider_ref'] as DocumentReference;
+    final serviceProviderRef =
+        data['service_provider_ref'] as DocumentReference;
 
     final doctorSnapshot = await doctorRef.get();
     final serviceProviderSnapshot = await serviceProviderRef.get();
 
     return DoctorWorksAtServiceProvider(
         doctor: DoctorModel.fromFirestore(doctorSnapshot),
-        serviceProvider: ServiceProviderModel.fromFirestore(serviceProviderSnapshot));
+        serviceProvider:
+            ServiceProviderModel.fromFirestore(serviceProviderSnapshot));
   }
 
   Map<String, dynamic> toFirestore() {
@@ -455,10 +456,13 @@ class AppointmentModel {
 class GlobalController extends GetxController {
   final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
   final RxList<DoctorModel> doctors = RxList<DoctorModel>();
-  final RxList<AccommodationModel> accommodations =RxList<AccommodationModel>();
+  final RxList<AccommodationModel> accommodations =
+      RxList<AccommodationModel>();
   final RxList<AppointmentModel> appointments = RxList<AppointmentModel>();
-  final RxList<ServiceProviderModel> service_providers = RxList<ServiceProviderModel>();
-  final RxList<DoctorWorksAtServiceProvider> doctorWorksAtServiceProviders = RxList<DoctorWorksAtServiceProvider>();
+  final RxList<ServiceProviderModel> service_providers =
+      RxList<ServiceProviderModel>();
+  final RxList<DoctorWorksAtServiceProvider> doctorWorksAtServiceProviders =
+      RxList<DoctorWorksAtServiceProvider>();
   bool isDataFetched = false;
 
   // Firestore References
@@ -476,16 +480,26 @@ class GlobalController extends GetxController {
 
   Future<void> fetchDoctors() async {
     QuerySnapshot querySnapshot = await _firestore.collection('doctors').get();
-    doctors.value = querySnapshot.docs.map((doc) => DoctorModel.fromFirestore(doc)).toList();
+    doctors.value = querySnapshot.docs
+        .map((doc) => DoctorModel.fromFirestore(doc))
+        .toList();
   }
+
   Future<void> fetchServiceProviders() async {
-    QuerySnapshot querySnapshot = await _firestore.collection('service_providers').get();
-    service_providers.value = querySnapshot.docs.map((doc) => ServiceProviderModel.fromFirestore(doc)).toList();
+    QuerySnapshot querySnapshot =
+        await _firestore.collection('service_providers').get();
+    service_providers.value = querySnapshot.docs
+        .map((doc) => ServiceProviderModel.fromFirestore(doc))
+        .toList();
   }
 
   Future<void> fetchDoctorWorksAtServiceProvider() async {
-    QuerySnapshot querySnapshot = await _firestore.collection('doctor_works_at_service_provider').get();
-    doctorWorksAtServiceProviders.value = querySnapshot.docs.map((doc) => DoctorWorksAtServiceProvider.fromFirestore(doc)).cast<DoctorWorksAtServiceProvider>().toList();
+    QuerySnapshot querySnapshot =
+        await _firestore.collection('doctor_works_at_service_provider').get();
+    doctorWorksAtServiceProviders.value = querySnapshot.docs
+        .map((doc) => DoctorWorksAtServiceProvider.fromFirestore(doc))
+        .cast<DoctorWorksAtServiceProvider>()
+        .toList();
   }
 
   Future<void> fetchAccommodations() async {
@@ -505,8 +519,6 @@ class GlobalController extends GetxController {
     }
     appointments.value = appointmentsList;
   }
-
-
 
   // Helper method to get current user
   UserModel? get getCurrentUser => currentUser.value;
