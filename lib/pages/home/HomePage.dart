@@ -10,6 +10,7 @@ import 'ProfilePage.dart';
 import 'CalendarPage.dart';
 import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
+import 'pharmacy_locator_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,9 +49,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if(isLoading) {
       return const Scaffold(
-        body: Center(
-            child: CircularProgressIndicator()
-        )
+          body: Center(
+              child: CircularProgressIndicator()
+          )
       );
     }
     return Scaffold(
@@ -168,8 +169,15 @@ class _HomePageState extends State<HomePage> {
                     icon: Icons.location_on,
                     text: "Localiser une pharmacie",
                     color: const Color(0xFFFBCFB2),
-                    height: 120, // Hauteur augmentée
+                    height: 120,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PharmacyLocatorPage()),
+                      );
+                    },
                   ),
+
                 ],
               ),
               const SizedBox(height: 20),
@@ -257,7 +265,7 @@ class OptionCard extends StatelessWidget {
   final double height;
   final VoidCallback? onTap; // Ajoutez un callback pour le clic
 
-  const OptionCard({super.key, 
+  const OptionCard({super.key,
     required this.icon,
     required this.text,
     required this.color,

@@ -4,7 +4,7 @@ import './ForgotPasswordPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../home/HomePage.dart';
-import 'RegistrationPage.dart';
+import 'PatientRegistrationPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -242,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(),
+                            builder: (context) => const PatientRegistrationPage(),
                           ),
                         );
                       },

@@ -4,115 +4,82 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
-import './LoginPage.dart';
+import './DoctorLoginPage.dart';
+import 'LoginPage.dart';
 
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
-
-  @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
-}
-
-class _RegistrationPageState extends State<RegistrationPage> {
+class _DoctorRegistrationPage extends State<DoctorRegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   File? _selectedImage;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isPasswordVisible = false;
   String? _selectedGender;
-  Role? role;
   UserCredential? userCredential;
   bool _isLoading = false;
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _specialtyController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _cinController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
-      if(_selectedGender == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez sélectionner un genre.')),
-        );
-        return;
-      }
-      if(role == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez sélectionner un rôle.')),
-        );
-        return;
-      }
-
-
-
       try {
         setState(() {
           _isLoading = true;
         });
-        userCredential = await _auth
-            .createUserWithEmailAndPassword(
+        userCredential = await _auth.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
         int cin = int.parse(_cinController.text.trim());
         DateTime date = DateTime.parse(_dobController.text.trim());
-        Gender gender = _selectedGender == "Male" ? Gender.MALE : Gender.FEMALE;
-
         String? profileImageUrl = await _uploadImage();
 
-
-        UserModel user = UserModel(
+        DoctorModel doctor = DoctorModel(
           id: userCredential!.user!.uid,
-          username: _nameController.text.trim(),
+          name: _nameController.text.trim(),
+          specialty: _specialtyController.text.trim(),
+          address: _addressController.text.trim(),
+          experienceYears: int.parse(_experienceController.text.trim()),
+          phoneNumber: _phoneController.text.trim(),
+          email: _emailController.text.trim(),
+          role: Role.DOCTOR,
+          profilePicture: profileImageUrl,
           cin: cin,
           birthday: date,
-          phoneNumber: _phoneController.text.trim(),
-          role: role ?? Role.PATIENT,
-          profilePicture: profileImageUrl,
-          gender: gender,
         );
 
-        await _firestore.collection('users').doc(user.id).set(user.toFirestore());
-
-        // adding to it's proporiet table
-        if (user.role == Role.PATIENT ){
-          PatientModel patient = PatientModel(
-            user : user
-          );
-          await _firestore.collection('patients').doc(user.id).set(patient.toFirestore());
-        }
-        if (user.role == Role.DOCTOR){
-          DoctorModel doctor = DoctorModel(user: user);
-          await _firestore.collection('patients').doc(user.id).set(doctor.toFirestore());
-        }
-
-
+        await _firestore.collection('users').doc(doctor.id).set(doctor.toFirestore());
 
         setState(() {
           _isLoading = false;
         });
-        GlobalController().setCurrentUser(user);
-        if(mounted) {
+
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Inscription réussie!')),
           );
         }
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } on FirebaseAuthException catch (e) {
-        if(mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(e.message ?? "Error occurred during signup.")),
+            SnackBar(content: Text(e.message ?? "Erreur lors de l'inscription.")),
           );
         }
       }
@@ -177,7 +144,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     const clientId = '9f9ec81a2a40523';
     final uri = Uri.parse('https://api.imgur.com/3/image');
     try {
-      // Create multipart request
       var request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Client-ID $clientId';
       request.files.add(await http.MultipartFile.fromPath(
@@ -185,13 +151,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
         imageFile.path,
       ));
 
-      // Send request
       final response = await request.send();
 
       if (response.statusCode == 200) {
         final responseData = await response.stream.bytesToString();
         final jsonData = jsonDecode(responseData);
-        return jsonData['data']['link']; // Return the URL of the uploaded image
+        return jsonData['data']['link'];
       } else {
         print('Error: ${response.statusCode}');
       }
@@ -212,7 +177,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(_isLoading){
+    if (_isLoading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -247,7 +212,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       child: CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.grey[300],
-                        backgroundImage: _selectedImage != null ? FileImage(_selectedImage!) : null,
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(_selectedImage!)
+                            : null,
                         child: _selectedImage == null
                             ? const Icon(Icons.camera_alt, size: 40, color: Colors.grey)
                             : null,
@@ -255,7 +222,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 13),
                     const Text(
-                      "Créer un nouveau compte",
+                      "Créer un compte médecin",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -263,14 +230,61 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-
                     _buildTextField(
-                      label: "Nom et prénom",
+                      label: "Nom",
                       icon: Icons.person_outline,
                       controller: _nameController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Le nom et prénom sont requis.';
+                          return 'Le nom est requis.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: "Spécialité",
+                      icon: Icons.medical_services_outlined,
+                      controller: _specialtyController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'La spécialité est requise.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: "Adresse",
+                      icon: Icons.location_on_outlined,
+                      controller: _addressController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'L\'adresse est requise.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: "Année d'expérience",
+                      icon: Icons.work_outline,
+                      controller: _experienceController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'L\'année d\'expérience est requise.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: "Numéro de téléphone",
+                      icon: Icons.phone_outlined,
+                      controller: _phoneController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Le téléphone est requis.';
                         }
                         return null;
                       },
@@ -284,61 +298,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         if (value == null || value.isEmpty) {
                           return 'L\'email est requis.';
                         }
-                        if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-                          return 'Veuillez entrer un email valide.';
-                        }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      label: "Téléphone",
-                      icon: Icons.phone_outlined,
-                      controller: _phoneController,
+                      label: "Date de naissance (yyyy-mm-dd)",
+                      icon: Icons.calendar_today,
+                      controller: _dobController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Le téléphone est requis.';
-                        }
-                        if (!RegExp(r"^\d{8"
-                        r"}$").hasMatch(value)) {
-                          return 'Veuillez entrer un numéro de téléphone valide.';
+                          return 'La date de naissance est requise.';
                         }
                         return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDatePicker(),
-                    const SizedBox(height: 20),
-                    DropdownButton<String>(
-                      hint: const Text('Select Gender'),
-                      value: _selectedGender,
-                      items: <String>['Male', 'Female']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedGender = newValue;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    DropdownButton<Role>(
-                      hint: const Text('Select Role'),
-                      value: role,
-                      items: Role.values.map<DropdownMenuItem<Role>>((Role role) {
-                        return DropdownMenuItem<Role>(
-                          value: role,
-                          child: Text(role.toString().split('.').last),
-                        );
-                      }).toList(),
-                      onChanged: (Role? newValue) {
-                        setState(() {
-                          role = newValue;
-                        });
                       },
                     ),
                     const SizedBox(height: 20),
@@ -354,46 +326,41 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    _buildPasswordField(),
-                    const SizedBox(height: 20),
-                    _buildImageUrlField(),  // URL field for profile picture
+                    _buildTextField(
+                      label: "Mot de passe",
+                      icon: Icons.lock_outline,
+                      controller: _passwordController,
+                      obscureText: !_isPasswordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Le mot de passe est requis.';
+                        }
+                        return null;
+                      },
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
                     const SizedBox(height: 30),
-
                     ElevatedButton(
                       onPressed: _signup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 3,
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        minimumSize: const Size(double.infinity, 56),
                       ),
                       child: const Text(
-                        "S'inscrire",
+                        'S\'inscrire',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Vous avez déjà un compte ? Se connecter",
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -411,75 +378,47 @@ class _RegistrationPageState extends State<RegistrationPage> {
     required String label,
     required IconData icon,
     required TextEditingController controller,
-    required String? Function(String?) validator,
+    required FormFieldValidator<String> validator,
+    bool obscureText = false,
+    Widget? suffixIcon,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon, color: Colors.teal),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        validator: validator,
       ),
+      validator: validator,
     );
-  }
-
-  Widget _buildDatePicker() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: TextFormField(
+  }Widget _buildDatePicker() {
+    return GestureDetector(
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            _dobController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+          });
+        }
+      },
+      child: _buildTextField(
+        label: "Date de naissance",
+        icon: Icons.calendar_today_outlined,
         controller: _dobController,
-        decoration: InputDecoration(
-          labelText: "Date de naissance (jj/mm/aaaa)",
-          prefixIcon: const Icon(Icons.calendar_today_outlined, color: Colors.teal),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'La date de naissance est requise.';
           }
           return null;
-        },
-        readOnly: true,
-        onTap: () async {
-          DateTime? pickedDate = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1900),
-            lastDate: DateTime.now(),
-          );
-          if (pickedDate != null) {
-            setState(() {
-              _dobController.text = pickedDate.toString();
-            });
-          }
         },
       ),
     );
@@ -493,59 +432,56 @@ class _RegistrationPageState extends State<RegistrationPage> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
+            spreadRadius: 3,
             blurRadius: 5,
           ),
         ],
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: TextFormField(
-        obscureText: !_isPasswordVisible,
         controller: _passwordController,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Le mot de passe est requis.';
+          }
+          return null;
+        },
+        obscureText: !_isPasswordVisible,
         decoration: InputDecoration(
-          labelText: "Mot de passe",
-          prefixIcon: const Icon(Icons.lock_outline, color: Colors.teal),
+          labelText: 'Mot de passe',
+          prefixIcon: const Icon(Icons.lock_outline),
           suffixIcon: IconButton(
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: Colors.grey,
-            ),
+            icon: Icon(_isPasswordVisible
+                ? Icons.visibility
+                : Icons.visibility_off),
             onPressed: () {
               setState(() {
                 _isPasswordVisible = !_isPasswordVisible;
               });
             },
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          border: InputBorder.none,
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Le mot de passe est requis.';
-          }
-          if (value.length < 6) {
-            return 'Le mot de passe doit contenir au moins 6 caractères.';
-          }
-          return null;
-        },
       ),
     );
   }
 
-  Widget _buildImageUrlField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
-          ),
-        ],
-    ),
+  Widget _buildLoginRedirect() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      },
+      child: const Text(
+        'Vous avez déjà un compte ? Connectez-vous',
+        style: TextStyle(
+          color: Colors.blue,
+          fontSize: 16,
+        ),
+      ),
     );
-
   }
+
 }
