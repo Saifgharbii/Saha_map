@@ -7,16 +7,18 @@ import '../home/CalendarPage.dart';
 import '../home/MessagesPage.dart';
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Paramètres',
           style: TextStyle(color: Colors.teal),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -25,15 +27,15 @@ class SettingsPage extends StatelessWidget {
         elevation: 0,
       ),
       body: ListView(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         children: [
           ListTile(
-            leading: Icon(Icons.language, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.language, color: Colors.teal),
+            title: const Text(
               'Langue',
               style: TextStyle(fontSize: 16),
             ),
-            trailing: Icon(Icons.chevron_right, color: Colors.grey),
+            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
             onTap: () {
               Navigator.push(
                 context,
@@ -41,14 +43,14 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.notifications, color: Colors.teal),
-            title: Text(
+            leading: const Icon(Icons.notifications, color: Colors.teal),
+            title: const Text(
               'Notification',
               style: TextStyle(fontSize: 16),
             ),
-            trailing: Icon(Icons.chevron_right, color: Colors.grey),
+            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
             onTap: () {
               Navigator.push(
                 context,
@@ -56,7 +58,7 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
       bottomNavigationBar: Container(
@@ -92,7 +94,7 @@ class SettingsPage extends StatelessWidget {
               }
             }
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
             BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
             BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),

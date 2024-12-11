@@ -5,7 +5,7 @@ class MessageDetailsPage extends StatelessWidget {
   final String avatar;
   final List<Map<String, dynamic>> messages;
 
-  MessageDetailsPage({
+  const MessageDetailsPage({super.key, 
     required this.name,
     required this.avatar,
     required this.messages,
@@ -20,28 +20,28 @@ class MessageDetailsPage extends StatelessWidget {
             CircleAvatar(
               backgroundImage: AssetImage(avatar),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               name,
-              style: TextStyle(color: Colors.teal,fontSize: 12,),
+              style: const TextStyle(color: Colors.teal,fontSize: 12,),
             ),
           ],
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.call, color: Colors.teal),
+            icon: const Icon(Icons.call, color: Colors.teal),
             onPressed: () {
               print("Appel audio avec $name");
             },
           ),
           IconButton(
-            icon: Icon(Icons.videocam, color: Colors.teal),
+            icon: const Icon(Icons.videocam, color: Colors.teal),
             onPressed: () {
               print("Appel vidéo avec $name");
             },
@@ -73,7 +73,7 @@ class MessageDetailsPage extends StatelessWidget {
           child: Row(
             children: [
               IconButton(
-                icon: Icon(Icons.camera_alt, color: Colors.teal),
+                icon: const Icon(Icons.camera_alt, color: Colors.teal),
                 onPressed: () {
                   print("Caméra activée");
                 },
@@ -89,7 +89,7 @@ class MessageDetailsPage extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.send, color: Colors.teal),
+                icon: const Icon(Icons.send, color: Colors.teal),
                 onPressed: () {
                   print("Message envoyé");
                 },
@@ -110,7 +110,7 @@ class MessageBubble extends StatelessWidget {
   final String? callDuration; // Durée de l'appel
   final String? imageUrl; // URL de l'image
 
-  MessageBubble({
+  const MessageBubble({super.key, 
     required this.isMe,
     required this.message,
     required this.time,
@@ -125,30 +125,30 @@ class MessageBubble extends StatelessWidget {
       return Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.call,
                 color: Colors.teal,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Appel vocal",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   if (callDuration != null)
                     Text(
                       callDuration!,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                 ],
               ),
@@ -160,30 +160,30 @@ class MessageBubble extends StatelessWidget {
       return Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.videocam,
                 color: Colors.blue,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Appel vidéo",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   if (callDuration != null)
                     Text(
                       callDuration!,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                 ],
               ),
@@ -195,8 +195,8 @@ class MessageBubble extends StatelessWidget {
       return Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(12),
@@ -213,7 +213,7 @@ class MessageBubble extends StatelessWidget {
               if (message.isNotEmpty)
                 Text(
                   message,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
             ],
           ),
@@ -226,8 +226,8 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 color: isMe ? Colors.blue : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12),
@@ -241,7 +241,7 @@ class MessageBubble extends StatelessWidget {
             ),
             Text(
               time,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
               ),

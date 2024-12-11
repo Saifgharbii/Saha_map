@@ -20,7 +20,7 @@ class DoctorInfoPage extends StatefulWidget {
   final List<Map<String, String>> avispatient;
   final List<Map<String, List<String>>> doctorAvailableTimesByDate;
 
-  DoctorInfoPage({
+  const DoctorInfoPage({super.key, 
     required this.name,
     required this.speciality,
     required this.address,
@@ -43,14 +43,14 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Infos Médecin",
           style: TextStyle(color: Colors.teal),
         ),
         centerTitle: true,
         backgroundColor: Colors.grey[100],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.teal),
+          icon: const Icon(Icons.arrow_back, color: Colors.teal),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -65,16 +65,16 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildDoctorCard(context), // Carte principale
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildSectionTitle("Profil"),
               Text(
                 widget.description,
-                style: TextStyle(fontSize: 16, height: 1.5),
+                style: const TextStyle(fontSize: 16, height: 1.5),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildSectionTitle("Avis des Patients"),
               _buildPatientReviews(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -111,7 +111,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
               break;
           }
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today), label: "Agenda"),
@@ -131,11 +131,11 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -169,7 +169,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       content: Text(
                         isFavorite ? "Ajouté aux favoris" : "Retiré des favoris",
                       ),
-                      duration: Duration(seconds: 2),
+                      duration: const Duration(seconds: 2),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
@@ -183,16 +183,16 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       radius: 50,
                       backgroundImage: AssetImage(widget.imagepath),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       widget.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       widget.speciality,
                       style: TextStyle(
@@ -205,7 +205,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -213,32 +213,32 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 onPressed: () {
                   // Ajouter avis
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text(
                   "Ajouter avis",
                   style: TextStyle(color: Colors.white),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
                   // Contacter médecin
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text(
                   "Contacter",
                   style: TextStyle(color: Colors.white),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
@@ -254,7 +254,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 ),
               );
             },
-            child: Text(
+            child: const Text(
               'Choisir une date',
               style: TextStyle(color: Colors.white),
             ),
@@ -267,7 +267,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
         color: Colors.blue,
@@ -279,7 +279,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
     return Column(
       children: widget.avispatient.map((review) {
         return Card(
-          margin: EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             leading: CircleAvatar(
               backgroundImage: AssetImage(review['image']!),

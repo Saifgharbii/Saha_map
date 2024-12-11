@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:saha_map/auth_wrapper.dart';
 import 'package:saha_map/pages/authentication/LoginPage.dart';
-import 'package:saha_map/pages/authentication/RegistrationPage.dart';
+import 'package:saha_map/pages/authentication/PatientRegistrationPage.dart';
+import 'package:saha_map/pages/authentication/RoleSelectionScreen.dart';
 import 'models/models.dart';
 import 'firebase_options.dart';
 
@@ -103,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                      MaterialPageRoute(builder: (context) => const RegistrationPage()),
+                      MaterialPageRoute(builder: (context) => const RoleSelectionScreen(isRegistration: true)),
                   );
                 },
                 style: ElevatedButton.styleFrom(

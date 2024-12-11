@@ -10,6 +10,7 @@ import 'ProfilePage.dart';
 import 'CalendarPage.dart';
 import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
+import 'pharmacy_locator_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,9 +49,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if(isLoading) {
       return const Scaffold(
-        body: Center(
-            child: CircularProgressIndicator()
-        )
+          body: Center(
+              child: CircularProgressIndicator()
+          )
       );
     }
     return Scaffold(
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite_border, color: Colors.black),
+            icon: const Icon(Icons.favorite_border, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -102,7 +103,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
+            icon: const Icon(Icons.notifications_none, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.help, color: Colors.black),
+            icon: const Icon(Icons.help, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
               TextField(
                 decoration: InputDecoration(
                   hintText: "Rechercher",
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.grey.shade200,
                   border: OutlineInputBorder(
@@ -140,14 +141,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Barre de recherche fine indépendante
               Container(
                 height: 2,
                 color: Colors.grey.shade300,
-                margin: EdgeInsets.symmetric(vertical: 8),
+                margin: const EdgeInsets.symmetric(vertical: 8),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Section des options principales
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,12 +168,19 @@ class _HomePageState extends State<HomePage> {
                   OptionCard(
                     icon: Icons.location_on,
                     text: "Localiser une pharmacie",
-                    color: Color(0xFFFBCFB2),
-                    height: 120, // Hauteur augmentée
+                    color: const Color(0xFFFBCFB2),
+                    height: 120,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PharmacyLocatorPage()),
+                      );
+                    },
                   ),
+
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               OptionCard(
                 icon: Icons.home,
                 text: "Réserver un logement",
@@ -180,20 +188,20 @@ class _HomePageState extends State<HomePage> {
                 isFullWidth: true,
                 height: 120, // Hauteur augmentée
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Section des rendez-vous
-              Text(
+              const Text(
                 "Rendez-vous ultérieurs",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               AppointmentCard(), // Carte de téléconsultation Dr. Rim Maala
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               AppointmentCard2(), // Carte de téléconsultation Dr. Sami Fourti
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -232,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                 break;
             }
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
             BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
             BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
@@ -257,7 +265,7 @@ class OptionCard extends StatelessWidget {
   final double height;
   final VoidCallback? onTap; // Ajoutez un callback pour le clic
 
-  OptionCard({
+  const OptionCard({super.key,
     required this.icon,
     required this.text,
     required this.color,
@@ -273,7 +281,7 @@ class OptionCard extends StatelessWidget {
       child: Container(
         width: isFullWidth ? double.infinity : MediaQuery.of(context).size.width * 0.45,
         height: height,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(12),
@@ -281,11 +289,11 @@ class OptionCard extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, size: 24),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 text,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -296,10 +304,12 @@ class OptionCard extends StatelessWidget {
 }
 
 class AppointmentCard extends StatelessWidget {
+  const AppointmentCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
@@ -307,7 +317,7 @@ class AppointmentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage('assets/images/doctor1.webp'),
@@ -333,10 +343,9 @@ class AppointmentCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {},
-            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white),),
             style:
             ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
@@ -344,6 +353,7 @@ class AppointmentCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
+            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white),),
           ),
         ],
       ),
@@ -352,10 +362,12 @@ class AppointmentCard extends StatelessWidget {
 }
 
 class AppointmentCard2 extends StatelessWidget {
+  const AppointmentCard2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
@@ -363,7 +375,7 @@ class AppointmentCard2 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage('assets/images/doctor2.jpg'),
@@ -389,16 +401,16 @@ class AppointmentCard2 extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {},
-            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
+            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white)),
           ),
         ],
       ),
