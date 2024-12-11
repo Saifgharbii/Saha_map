@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saha_map/models/models.dart';
 
 import '../CalendarPage.dart';
 import '../HomePage.dart';
@@ -10,26 +11,28 @@ import 'choisiredate.dart';
 List<Map<String, String>> favoriteDoctors = [];
 
 class DoctorInfoPage extends StatefulWidget {
-  final String name;
-  final String speciality;
-  final String address;
-  final double latitude;
-  final double longitude;
-  final String description;
-  final String imagepath;
-  final List<Map<String, String>> avispatient;
-  final List<Map<String, List<String>>> doctorAvailableTimesByDate;
+  final DoctorWorksAtServiceProvider docSer;
+  // final String name;
+  // final String speciality;
+  // final String address;
+  // final double latitude;
+  // final double longitude;
+  // final String description;
+  // final String imagepath;
+  // final List<Map<String, String>> avispatient;
+  // final List<Map<String, List<String>>> doctorAvailableTimesByDate;
 
-  const DoctorInfoPage({super.key, 
-    required this.name,
-    required this.speciality,
-    required this.address,
-    required this.latitude,
-    required this.longitude,
-    required this.description,
-    required this.imagepath,
-    required this.avispatient,
-    required this.doctorAvailableTimesByDate,
+  const DoctorInfoPage({super.key,
+    required this.docSer,
+    // required this.name,
+    // required this.speciality,
+    // required this.address,
+    // required this.latitude,
+    // required this.longitude,
+    // required this.description,
+    // required this.imagepath,
+    // required this.avispatient,
+    // required this.doctorAvailableTimesByDate,
   });
 
   @override
@@ -38,7 +41,7 @@ class DoctorInfoPage extends StatefulWidget {
 
 class _DoctorInfoPageState extends State<DoctorInfoPage> {
   bool isFavorite = false; // Variable pour gérer l'état du cœur
-
+  late final FavoritsDoctorsModel  favDoctors ;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +71,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
               const SizedBox(height: 16),
               _buildSectionTitle("Profil"),
               Text(
-                widget.description,
+                widget.docSer.serviceProvider.description,
                 style: const TextStyle(fontSize: 16, height: 1.5),
               ),
               const SizedBox(height: 16),
@@ -154,11 +157,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       isFavorite = !isFavorite;
 
                       if (isFavorite) {
-                        favoriteDoctors.add({
-                          'name': widget.name,
-                          'speciality': widget.speciality,
-                          'imagepath': widget.imagepath,
-                        });
+
                       } else {
                         favoriteDoctors.removeWhere(
                                 (doctor) => doctor['name'] == widget.name);
