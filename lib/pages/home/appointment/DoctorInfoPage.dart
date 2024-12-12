@@ -9,6 +9,12 @@ import 'choisiredate.dart';
 
 // Simulez la liste des médecins favoris
 List<Map<String, String>> favoriteDoctors = [];
+List<Map<String, List<String>>> randomValues = [
+{
+"fruits": ["apple", "banana", "cherry"],
+"vegetables": ["carrot", "spinach", "broccoli"],
+"drinks": ["water", "juice", "soda"],
+}];
 
 class DoctorInfoPage extends StatefulWidget {
   final DoctorWorksAtServiceProvider docSer;
@@ -160,7 +166,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
 
                       } else {
                         favoriteDoctors.removeWhere(
-                                (doctor) => doctor['name'] == widget.name);
+                                (doctor) => doctor['name'] == widget.docSer.doctor.user.username);
                       }
                     });
 
@@ -180,11 +186,11 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage(widget.imagepath),
+                      backgroundImage: AssetImage(widget.docSer.serviceProvider.photo_url),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.name,
+                      widget.docSer.serviceProvider.name,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -193,7 +199,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.speciality,
+                      widget.docSer.doctor.speciality.name,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -247,8 +253,8 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChoisireDatePage(
-                    doctorName: widget.name,
-                    doctorAvailableTimesByDate: widget.doctorAvailableTimesByDate,
+                    doctorName: widget.docSer.doctor.user.username,
+                    doctorAvailableTimesByDate: randomValues,
                   ),
                 ),
               );
@@ -276,18 +282,18 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
 
   Widget _buildPatientReviews() {
     return Column(
-      children: widget.avispatient.map((review) {
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage(review['image']!),
-            ),
-            title: Text(review['name']!),
-            subtitle: Text(review['review']!),
-          ),
-        );
-      }).toList(),
+      // children: widget.avispatient.map((review) {
+      //   return Card(
+      //     margin: const EdgeInsets.symmetric(vertical: 8),
+      //     child: ListTile(
+      //       leading: CircleAvatar(
+      //         backgroundImage: AssetImage(review['image']!),
+      //       ),
+      //       title: Text(review['name']!),
+      //       subtitle: Text(review['review']!),
+      //     ),
+      //   );
+      // }).toList(),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_common/get_reset.dart';
 import 'package:saha_map/models/models.dart';
 
 import '../CalendarPage.dart';
@@ -17,26 +16,26 @@ class AppointmentPage extends StatefulWidget {
 class _AppointmentPageState extends State<AppointmentPage> {
   String selectedServiceProviderType = ""; // Cabinet ou Clinique
   late GovernorateModel? selectedGovernorate ; // Gouvernorat
-  String selectedSpeciality = ""; // Spécialité
+  Specialties? selectedSpeciality; // Spécialité
 
   final List<String> _governorates = [
-    "Tunis", "Ariana", "Ben Arous", "Manouba", "Nabeul",
+    "Tunis", "Ariana", "Ben_Arous", "Manouba", "Nabeul",
     "Bizerte", "Beja", "Jendouba", "Zaghouan", "Kairouan",
     "Sousse", "Monastir", "Mahdia", "Sfax", "Gabes",
     "Mednine", "Tataouine", "Kebili", "Tozeur", "Gafsa",
-    "Kasserine", "Sidi Bouzid", "Siliana", "Le Kef"
+    "Kasserine", "Sidi_Bouzid", "Siliana", "Le_Kef"
   ];
 
   final List<Map<String, dynamic>> _specialities = [
-    {"label": "Anesthésiologie", "icon": Icons.local_hospital},
-    {"label": "Cardiologie", "icon": Icons.favorite},
-    {"label": "Dermatologie", "icon": Icons.spa},
-    {"label": "Endocrinologie", "icon": Icons.medical_services},
-    {"label": "Gastro-entérologie", "icon": Icons.lunch_dining},
-    {"label": "Médecine interne", "icon": Icons.healing},
-    {"label": "Pédiatrie", "icon": Icons.child_friendly},
-    {"label": "Ophtalmologie", "icon": Icons.visibility},
-    {"label": "Psychiatrie", "icon": Icons.psychology},
+    {"label": "Anesthésiologie", "icon": Icons.medical_services, "specialty": Specialties.ANESTHESIOLOGY},
+    {"label": "Cardiologie", "icon": Icons.favorite, "specialty": Specialties.CARDIOLOGY},
+    {"label": "Dermatologie", "icon": Icons.spa, "specialty": Specialties.DERMATOLOGY},
+    {"label": "Endocrinologie", "icon": Icons.health_and_safety, "specialty": Specialties.ENDOCRINOLOGY},
+    {"label": "Gastro-entérologie", "icon": Icons.lunch_dining, "specialty": Specialties.GASTROENTEROLOGY},
+    {"label": "Médecine interne", "icon": Icons.healing, "specialty": Specialties.GENERAL_PRACTICE},
+    {"label": "Pédiatrie", "icon": Icons.child_friendly, "specialty": Specialties.PEDIATRICS},
+    {"label": "Ophtalmologie", "icon": Icons.visibility, "specialty": Specialties.OPHTHALMOLOGY},
+    {"label": "Psychiatrie", "icon": Icons.psychology, "specialty": Specialties.PSYCHIATRY}
   ];
 
   @override
@@ -134,8 +133,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 return SpecialityCard(
                   icon: speciality["icon"],
                   label: speciality["label"],
-                  isActive: selectedSpeciality == speciality["label"],
-                  onPressed: () => setState(() => selectedSpeciality = speciality["label"]),
+                  isActive: selectedSpeciality == speciality["specialty"],
+                  onPressed: () => setState(() => selectedSpeciality = speciality["specialty"]),
                 );
               },
             ),
@@ -143,7 +142,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (selectedServiceProviderType.isEmpty || selectedGovernorate == null || selectedSpeciality.isEmpty) {
+                  if (selectedServiceProviderType.isEmpty || selectedGovernorate == null || selectedSpeciality == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Veuillez remplir tous les champs !")),
                     );
@@ -152,9 +151,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResultPage(
-                          option: selectedServiceProviderType,
+                          selectedServiceProviderType : selectedServiceProviderType,
                           governorate: selectedGovernorate!,
-                          speciality: selectedSpeciality,
+                          speciality: selectedSpeciality! ,
                         ),
                       ),
                     );
@@ -187,19 +186,19 @@ class _AppointmentPageState extends State<AppointmentPage> {
     case 1:
     Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => CalendarPage()),
+    MaterialPageRoute(builder: (context) => const CalendarPage()),
     );
     break;
     case 2:
     Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => MessagesPage()),
+    MaterialPageRoute(builder: (context) => const MessagesPage()),
     );
     break;
     case 3:
     Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => SettingsPage()),
+    MaterialPageRoute(builder: (context) => const SettingsPage()),
     );
     break;
     }
