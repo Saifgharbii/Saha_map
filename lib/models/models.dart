@@ -1,4 +1,4 @@
-import 'dart:ffi';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -163,7 +163,7 @@ class UserModel {
     required this.cin,
     required this.birthday,
     required this.gender,
-    this.profilePicture,
+    this.profilePicture = "https://cdn.pixabay.com/photo/2023/10/03/10/49/anonymous-8291223_960_720.png",
     required this.phoneNumber,
     required this.role,
   });
@@ -188,7 +188,7 @@ class UserModel {
       'cin': cin,
       'birthday': birthday,
       'gender': gender.name,
-      'profile_picture': profilePicture,
+      'profile_picture': profilePicture ?? "https://cdn.pixabay.com/photo/2023/10/03/10/49/anonymous-8291223_960_720.png",
       'phone_number': phoneNumber,
       'role': role.name,
     };
@@ -274,10 +274,11 @@ class DoctorModel {
       'phone_number': user.phoneNumber,
       'role': user.role.name,
       'consultationFee': consultationFee,
-      'speciality': speciality,
+      'speciality': speciality.name,
       'experienceYears': experienceYears,
       'recommendationRate': recommendationRate,
       'address': address,
+      'governorate' : governorate.governorate.name,
     };
   }
 }
