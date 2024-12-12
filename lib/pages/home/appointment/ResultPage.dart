@@ -9,15 +9,14 @@ import 'DoctorInfoPage.dart';
 import '../MessagesPage.dart';
 import '../../profile/SettingsPage.dart';
 import '../../../models/models.dart';
-
-
+import 'package:firebase_core/firebase_core.dart';
+import '../../../firebase_options.dart';
 
 class ResultPage extends StatelessWidget {
   final String selectedServiceProviderType;
   final GovernorateModel governorate;
   final Specialties speciality;
-
-  final GlobalController globalController = Get.find();
+  // final GlobalController globalController = GlobalController.to;
 
 
   ResultPage({
@@ -29,6 +28,14 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    WidgetsFlutterBinding.ensureInitialized();
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    Get.put(GlobalController());
+    GlobalController globalController = GlobalController();
+    globalController.fetchAllData();
+
+    print(globalController.doctors.value);
     // List<ServiceProviderModel> serviceProvidersList = globalController.service_providers.value;
     // List<DoctorModel> doctorsList = globalController.doctors.value;
     List<DoctorWorksAtServiceProvider>  doctorWorksAtServiceProviderList = globalController.doctorWorksAtServiceProviders.value;
