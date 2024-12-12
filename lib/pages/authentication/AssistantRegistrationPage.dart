@@ -109,7 +109,6 @@ class _AssistantClinicRegistrationPageState
           name: _clinicNameController.text.trim(),
           address: _clinicaddressController.text.trim(),
           phoneNumber: _clinicphoneController.text.trim(),
-          governorate: _clinicGovernorateController.text.trim(),
           photo_url: profileImageUrl ?? '',
           email: _clinicemailController.text.trim(),
         );

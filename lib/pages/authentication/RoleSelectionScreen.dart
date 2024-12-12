@@ -80,7 +80,7 @@ class RoleSelectionScreen extends StatelessWidget {
         case 'Assistant':
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AssistantRegistrationPage()),
+            MaterialPageRoute(builder: (context) => const AssistantClinicRegistrationPage()),
           );
           break;
         default:

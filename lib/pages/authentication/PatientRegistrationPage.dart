@@ -9,14 +9,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
 import './LoginPage.dart';
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+class PatientRegistrationPage extends StatefulWidget {
+  const PatientRegistrationPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  State<PatientRegistrationPage> createState() => _PatientRegistrationPage();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _PatientRegistrationPage extends State<PatientRegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   File? _selectedImage;
@@ -107,6 +107,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
+    }
+    else {
+      _selectedImage = File("https://cdn.pixabay.com/photo/2023/10/03/10/49/anonymous-8291223_960_720.png");
     }
   }
 

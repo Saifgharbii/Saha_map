@@ -36,7 +36,6 @@ class ResultPage extends StatelessWidget {
     final List<DoctorWorksAtServiceProvider> filtred_doctorWorksAtServiceProviderList = [] ;
     for (var docSer in doctorWorksAtServiceProviderList) {
       if (docSer.doctor.speciality == speciality &&
-        docSer.serviceProvider.type == selectedServiceProviderType &&
         docSer.serviceProvider.governorate == governorate   ) {
           filtred_doctorWorksAtServiceProviderList.add(docSer);
       }

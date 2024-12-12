@@ -203,15 +203,15 @@ class PatientModel {
 
   PatientModel({
     required this.user,
-    this.medicalHistory,
-    this.feedback,
+    this.medicalHistory =  "medicalHistory",
+    this.feedback =  "feedback",
   });
 
   Map<String, dynamic> toFirestore() {
     return {
       'username': user.username,
       'cin': user.cin,
-      'birthday': user.birthday,
+      'birthday': user.birthday.toString(),
       'gender': user.gender.name,
       'profile_picture': user.profilePicture,
       'phone_number': user.phoneNumber,
@@ -268,7 +268,7 @@ class DoctorModel {
     return {
       'username': user.username,
       'cin': user.cin,
-      'birthday': user.birthday,
+      'birthday': user.birthday.toString(),
       'gender': user.gender.name,
       'profile_picture': user.profilePicture,
       'phone_number': user.phoneNumber,
@@ -348,10 +348,11 @@ class ServiceProviderModel {
     this.latitude = 36.8065, 
     this.longitude = 10.1815,
     required this.photo_url,
-    required this.governorate,
+
     this.description = "nothing to display",
     required this.address,
-  });
+    GovernorateModel? governorate,
+}) : this.governorate = governorate ?? governorateMap["Tunis"]!;
 
   factory ServiceProviderModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;

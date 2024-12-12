@@ -10,13 +10,13 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
 import './LoginPage.dart';
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+class DoctorRegistrationPage extends StatefulWidget {
+  const DoctorRegistrationPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  State<DoctorRegistrationPage> createState() => _RegistrationPageState();
 }
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegistrationPageState extends State<DoctorRegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   File? _selectedImage;
