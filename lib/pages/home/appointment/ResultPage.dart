@@ -32,7 +32,8 @@ class ResultPage extends StatelessWidget {
     // List<ServiceProviderModel> serviceProvidersList = globalController.service_providers.value;
     // List<DoctorModel> doctorsList = globalController.doctors.value;
     List<DoctorWorksAtServiceProvider>  doctorWorksAtServiceProviderList = globalController.doctorWorksAtServiceProviders.value;
-
+    print("fetched");
+    print(doctorWorksAtServiceProviderList) ;
     final List<DoctorWorksAtServiceProvider> filtred_doctorWorksAtServiceProviderList = [] ;
     for (var docSer in doctorWorksAtServiceProviderList) {
       if (docSer.doctor.speciality == speciality &&

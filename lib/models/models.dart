@@ -254,7 +254,8 @@ class DoctorModel {
 
   factory DoctorModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return DoctorModel(
+    print("fetching from doctor") ;
+    DoctorModel doctor = DoctorModel(
       user: UserModel.fromFirestore(doc),
       consultationFee: data['consultation_fee'] ?? 70.0,
       speciality: Specialties.values.byName(data['speciality']) ??
@@ -263,6 +264,8 @@ class DoctorModel {
       recommendationRate: data['recommendation_rate'] ?? 0.0,
       address: data['address'] ?? 'tunis,tunis',
     );
+    print("done fetching from doctor") ;
+    return doctor;
   }
   Map<String, dynamic> toFirestore() {
     return {
@@ -393,22 +396,13 @@ class DoctorWorksAtServiceProvider {
     required this.serviceProvider,
   });
 
-  static Future<DoctorWorksAtServiceProvider> fromFirestore(
-      DocumentSnapshot doc) async {
-    final data = doc.data() as Map<String, dynamic>;
+  factory DoctorWorksAtServiceProvider.fromFirestore(DocumentSnapshot doc) {
 
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     // Fetch doctor and service provider data using their references
-    final doctorRef = data['doctor_ref'] as DocumentReference;
-    final serviceProviderRef =
-        data['service_provider_ref'] as DocumentReference;
-
-    final doctorSnapshot = await doctorRef.get();
-    final serviceProviderSnapshot = await serviceProviderRef.get();
-
     return DoctorWorksAtServiceProvider(
-        doctor: DoctorModel.fromFirestore(doctorSnapshot),
-        serviceProvider:
-            ServiceProviderModel.fromFirestore(serviceProviderSnapshot));
+        doctor: DoctorModel.fromFirestore(doc),
+        serviceProvider: ServiceProviderModel.fromFirestore(doc));
   }
 
   Map<String, dynamic> toFirestore() {
@@ -480,24 +474,15 @@ class AppointmentModel {
     required this.status,
   });
 
-  static Future<AppointmentModel> fromFirestore(DocumentSnapshot doc) async {
-    final data = doc.data() as Map<String, dynamic>;
 
-    // Fetch patient and doctor data using their references
-    final patientRef = data['patient_ref'] as DocumentReference;
-    final doctorRef = data['doctor_ref'] as DocumentReference;
-    final serviceProviderRef =
-        data['service_provider_ref'] as DocumentReference;
 
-    final patientSnapshot = await patientRef.get();
-    final doctorSnapshot = await doctorRef.get();
-    final serviceProviderSnapshot = await serviceProviderRef.get();
+  factory AppointmentModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     return AppointmentModel(
-      patient: PatientModel.fromFirestore(patientSnapshot),
-      doctor: DoctorModel.fromFirestore(doctorSnapshot),
-      serviceProvider:
-          ServiceProviderModel.fromFirestore(serviceProviderSnapshot),
+      patient: PatientModel.fromFirestore(doc),
+      doctor: DoctorModel.fromFirestore(doc),
+      serviceProvider: ServiceProviderModel.fromFirestore(doc),
       appointmentDate: (data['appointment_date'] as Timestamp).toDate(),
       appointmentHour: (data['appointment_hour'] as Timestamp).toDate(),
       mode: AppointmentMode.values.byName(data['mode']),
@@ -510,13 +495,10 @@ class AppointmentModel {
 class GlobalController extends GetxController {
   final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
   final RxList<DoctorModel> doctors = RxList<DoctorModel>();
-  final RxList<AccommodationModel> accommodations =
-      RxList<AccommodationModel>();
+  final RxList<AccommodationModel> accommodations = RxList<AccommodationModel>();
   final RxList<AppointmentModel> appointments = RxList<AppointmentModel>();
-  final RxList<ServiceProviderModel> service_providers =
-      RxList<ServiceProviderModel>();
-  final RxList<DoctorWorksAtServiceProvider> doctorWorksAtServiceProviders =
-      RxList<DoctorWorksAtServiceProvider>();
+  final RxList<ServiceProviderModel> service_providers = RxList<ServiceProviderModel>();
+  final RxList<DoctorWorksAtServiceProvider> doctorWorksAtServiceProviders = RxList<DoctorWorksAtServiceProvider>();
   bool isDataFetched = false;
 
   // Firestore References
@@ -524,11 +506,18 @@ class GlobalController extends GetxController {
 
   // Fetch and populate data methods
   Future<void> fetchAllData() async {
+    print("start fetching") ;
     await fetchDoctors();
-    await fetchAccommodations();
-    await fetchAppointments();
+    print("doctors done") ;
     await fetchServiceProviders();
+    print("serv pe done") ;
     await fetchDoctorWorksAtServiceProvider();
+    print("All data is fetched") ;
+    // await fetchAccommodations();
+    // print("accomodation done") ;
+    await fetchAppointments();
+    print("appoint done") ;
+
     isDataFetched = true;
   }
 
@@ -551,9 +540,7 @@ class GlobalController extends GetxController {
     QuerySnapshot querySnapshot =
         await _firestore.collection('doctor_works_at_service_provider').get();
     doctorWorksAtServiceProviders.value = querySnapshot.docs
-        .map((doc) => DoctorWorksAtServiceProvider.fromFirestore(doc))
-        .cast<DoctorWorksAtServiceProvider>()
-        .toList();
+        .map((doc) => DoctorWorksAtServiceProvider.fromFirestore(doc)).toList();
   }
 
   Future<void> fetchAccommodations() async {

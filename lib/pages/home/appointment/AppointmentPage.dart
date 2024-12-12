@@ -15,7 +15,7 @@ class AppointmentPage extends StatefulWidget {
 
 class _AppointmentPageState extends State<AppointmentPage> {
   String selectedServiceProviderType = ""; // Cabinet ou Clinique
-  late GovernorateModel? selectedGovernorate ; // Gouvernorat
+  GovernorateModel? selectedGovernorate ;//= governorateMap["Tunis"] ; // Gouvernorat
   Specialties? selectedSpeciality; // Spécialité
 
   final List<String> _governorates = [
