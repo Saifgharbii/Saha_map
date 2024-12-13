@@ -14,28 +14,84 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  String selectedServiceProviderType = ""; // Cabinet ou Clinique
-  GovernorateModel? selectedGovernorate ;//= governorateMap["Tunis"] ; // Gouvernorat
+  String selectedServiceProviderType = "";
+  GovernorateModel?
+      selectedGovernorate; //= governorateMap["Tunis"] ; // Gouvernorat
   Specialties? selectedSpeciality; // Spécialité
 
   final List<String> _governorates = [
-    "Tunis", "Ariana", "Ben_Arous", "Manouba", "Nabeul",
-    "Bizerte", "Beja", "Jendouba", "Zaghouan", "Kairouan",
-    "Sousse", "Monastir", "Mahdia", "Sfax", "Gabes",
-    "Mednine", "Tataouine", "Kebili", "Tozeur", "Gafsa",
-    "Kasserine", "Sidi_Bouzid", "Siliana", "Le_Kef"
+    "Tunis",
+    "Ariana",
+    "Ben_Arous",
+    "Manouba",
+    "Nabeul",
+    "Bizerte",
+    "Beja",
+    "Jendouba",
+    "Zaghouan",
+    "Kairouan",
+    "Sousse",
+    "Monastir",
+    "Mahdia",
+    "Sfax",
+    "Gabes",
+    "Mednine",
+    "Tataouine",
+    "Kebili",
+    "Tozeur",
+    "Gafsa",
+    "Kasserine",
+    "Sidi_Bouzid",
+    "Siliana",
+    "Le_Kef"
   ];
 
   final List<Map<String, dynamic>> _specialities = [
-    {"label": "Anesthésiologie", "icon": Icons.medical_services, "specialty": Specialties.ANESTHESIOLOGY},
-    {"label": "Cardiologie", "icon": Icons.favorite, "specialty": Specialties.CARDIOLOGY},
-    {"label": "Dermatologie", "icon": Icons.spa, "specialty": Specialties.DERMATOLOGY},
-    {"label": "Endocrinologie", "icon": Icons.health_and_safety, "specialty": Specialties.ENDOCRINOLOGY},
-    {"label": "Gastro-entérologie", "icon": Icons.lunch_dining, "specialty": Specialties.GASTROENTEROLOGY},
-    {"label": "Médecine interne", "icon": Icons.healing, "specialty": Specialties.GENERAL_PRACTICE},
-    {"label": "Pédiatrie", "icon": Icons.child_friendly, "specialty": Specialties.PEDIATRICS},
-    {"label": "Ophtalmologie", "icon": Icons.visibility, "specialty": Specialties.OPHTHALMOLOGY},
-    {"label": "Psychiatrie", "icon": Icons.psychology, "specialty": Specialties.PSYCHIATRY}
+    {
+      "label": "Rheumatologie",
+      "icon": Icons.medical_services,
+      "specialty": Specialties.RHEUMATOLOGY
+    },
+    {
+      "label": "Cardiologie",
+      "icon": Icons.favorite,
+      "specialty": Specialties.CARDIOLOGY
+    },
+    {
+      "label": "Dermatologie",
+      "icon": Icons.spa,
+      "specialty": Specialties.DERMATOLOGY
+    },
+    {
+      "label": "Endocrinologie",
+      "icon": Icons.health_and_safety,
+      "specialty": Specialties.ENDOCRINOLOGY
+    },
+    {
+      "label": "Gastro-entérologie",
+      "icon": Icons.lunch_dining,
+      "specialty": Specialties.GASTROENTEROLOGY
+    },
+    {
+      "label": "Médecine générale",
+      "icon": Icons.healing,
+      "specialty": Specialties.FAMILY_MEDICINE
+    },
+    {
+      "label": "Pédiatrie",
+      "icon": Icons.child_friendly,
+      "specialty": Specialties.PEDIATRICS
+    },
+    {
+      "label": "Ophtalmologie",
+      "icon": Icons.visibility,
+      "specialty": Specialties.OPHTHALMOLOGY
+    },
+    {
+      "label": "Psychiatrie",
+      "icon": Icons.psychology,
+      "specialty": Specialties.PSYCHIATRY
+    }
   ];
 
   @override
@@ -46,7 +102,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
         elevation: 0,
         title: const Text(
           "Prendre un rendez-vous",
-          style: TextStyle(color: Colors.teal, fontSize: 18, fontWeight: FontWeight.bold,),
+          style: TextStyle(
+            color: Colors.teal,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.teal),
@@ -70,13 +130,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   const SizedBox(height: 5),
                   const Text(
                     "Votre santé, Notre priorité!",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.teal),
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            const Text("Sélectionner", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("Sélectionner",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,39 +149,47 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   icon: Icons.local_hospital,
                   label: "Clinique",
                   isActive: selectedServiceProviderType == "CLINIC",
-                  onPressed: () => setState(() => selectedServiceProviderType = "CLINIC"),
+                  onPressed: () =>
+                      setState(() => selectedServiceProviderType = "CLINIC"),
                 ),
                 SelectOptionCard(
                   icon: Icons.medical_services,
                   label: "Cabinet",
                   isActive: selectedServiceProviderType == "CABINET",
-                  onPressed: () => setState(() => selectedServiceProviderType = "CABINET"),
+                  onPressed: () =>
+                      setState(() => selectedServiceProviderType = "CABINET"),
                 ),
               ],
             ),
             const SizedBox(height: 30),
-    const Text("Quelle ville ou quel gouvernorat ?", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-    const SizedBox(height: 10),
-    DropdownButtonFormField<String>(
-    decoration: InputDecoration(
-    filled: true,
-    fillColor: selectedGovernorate == null? Colors.grey.shade300 : Colors.teal.shade100,
-    border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide.none,
-    ),
-    ),
-    hint: const Text("Sélectionnez un gouvernorat"),
-    items: _governorates.map((String value) {
-    return DropdownMenuItem<String>(
-    value: value,
-    child: Text(value),
-    );
-    }).toList(),
-    onChanged: (value) => setState(() {selectedGovernorate = governorateMap[value]!; }),
-    ),
+            const Text("Quelle ville ou quel gouvernorat ?",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: selectedGovernorate == null
+                    ? Colors.grey.shade300
+                    : Colors.teal.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              hint: const Text("Sélectionnez un gouvernorat"),
+              items: _governorates.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (value) => setState(() {
+                selectedGovernorate = governorateMap[value]!;
+              }),
+            ),
             const SizedBox(height: 30),
-            const Text("Spécialités", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("Spécialités",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
@@ -134,7 +206,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   icon: speciality["icon"],
                   label: speciality["label"],
                   isActive: selectedSpeciality == speciality["specialty"],
-                  onPressed: () => setState(() => selectedSpeciality = speciality["specialty"]),
+                  onPressed: () => setState(
+                      () => selectedSpeciality = speciality["specialty"]),
                 );
               },
             ),
@@ -142,75 +215,86 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (selectedServiceProviderType.isEmpty || selectedGovernorate == null || selectedSpeciality == null) {
+                  if (selectedServiceProviderType.isEmpty ||
+                      selectedGovernorate == null ||
+                      selectedSpeciality == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Veuillez remplir tous les champs !")),
+                      const SnackBar(
+                          content: Text("Veuillez remplir tous les champs !")),
                     );
                   } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResultPage(
-                          selectedServiceProviderType : selectedServiceProviderType,
-                          governorate: selectedGovernorate!,
-                          speciality: selectedSpeciality! ,
-                        ),
-                      ),
-                    );
+                   Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ResultPage(
+      selectedServiceProviderType: selectedServiceProviderType,
+      selectedGovernorate: selectedGovernorate!,
+      selectedSpeciality: selectedSpeciality!,
+    ),
+  ),
+);
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25)),
                 ),
                 child: const Text(
                   "Rechercher",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
           ],
         ),
       ),
-    bottomNavigationBar: Container(
-    color: Colors.blue.shade100,
-    child: BottomNavigationBar(
-    elevation: 0,
-    selectedItemColor: Colors.blue,
-    unselectedItemColor: Colors.black54,
-    onTap: (index) {
-    switch (index) {
-    case 0:
-    break;
-    case 1:
-    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const CalendarPage()),
-    );
-    break;
-    case 2:
-    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const MessagesPage()),
-    );
-    break;
-    case 3:
-    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const SettingsPage()),
-    );
-    break;
-    }
-    },
-    items: const [
-    BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
-    BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
-    BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
-    BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Paramètres"),
-    ],
-    ),
-    ),
+      bottomNavigationBar: Container(
+        color: Colors.blue.shade100,
+        child: BottomNavigationBar(
+          elevation: 0,
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.black54,
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                break;
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CalendarPage()),
+                );
+                break;
+              case 2:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MessagesPage()),
+                );
+                break;
+              case 3:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+                break;
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today), label: "Agenda"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.chat), label: "Messagerie"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: "Paramètres"),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -221,7 +305,8 @@ class SelectOptionCard extends StatelessWidget {
   final bool isActive;
   final VoidCallback onPressed;
 
-  const SelectOptionCard({super.key, 
+  const SelectOptionCard({
+    super.key,
     required this.icon,
     required this.label,
     required this.isActive,
@@ -240,9 +325,12 @@ class SelectOptionCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
+            Icon(icon,
+                size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
             const SizedBox(height: 10),
-            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -256,7 +344,8 @@ class SpecialityCard extends StatelessWidget {
   final bool isActive;
   final VoidCallback onPressed;
 
-  const SpecialityCard({super.key, 
+  const SpecialityCard({
+    super.key,
     required this.icon,
     required this.label,
     required this.isActive,
@@ -275,15 +364,15 @@ class SpecialityCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
+            Icon(icon,
+                size: 40, color: isActive ? Colors.teal.shade600 : Colors.blue),
             const SizedBox(height: 8),
-            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
+            Text(label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14)),
           ],
         ),
-
-        ),
-
+      ),
     );
   }
 }
-

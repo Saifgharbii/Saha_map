@@ -245,7 +245,7 @@ class DoctorModel {
     required this.user,
     this.consultationFee = 70.0,
     this.speciality = Specialties.GENERAL_PRACTICE,
-    this.experienceYears = 1,
+    this.experienceYears =1,
     this.recommendationRate = 0.0,
     this.address = 'tunis,tunis',
     GovernorateModel? governorate,
@@ -259,7 +259,7 @@ class DoctorModel {
       consultationFee: data['consultation_fee'] ?? 70.0,
       speciality: Specialties.values.byName(data['speciality']) ??
           Specialties.GENERAL_PRACTICE,
-      experienceYears: data['experience_years'] ?? 1,
+      experienceYears: data['experienceYears']?? 1 ,
       recommendationRate: data['recommendation_rate'] ?? 0.0,
       address: data['address'] ?? 'tunis,tunis',
     );
