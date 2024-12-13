@@ -875,8 +875,8 @@ import 'package:flutter_map/flutter_map.dart'; // If you're using flutter_map
 import '../../../models/models.dart';
 import 'package:latlong2/latlong.dart';
 import 'DoctorInfoPage.dart'; // Import the DoctorInfoPage here
-
-class ResultPage extends StatefulWidget {
+import 'package:firebase_core/firebase_core.dart';
+import '../../../firebase_options.dart';class ResultPage extends StatefulWidget {
   final String selectedServiceProviderType;
   final GovernorateModel selectedGovernorate;
   final Specialties selectedSpeciality;
