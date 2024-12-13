@@ -11,6 +11,7 @@ import 'CalendarPage.dart';
 import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
 import 'pharmacy_locator_page.dart';
+import 'HousingLocatorPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -187,6 +188,12 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.teal.shade50,
                 isFullWidth: true,
                 height: 120, // Hauteur augmentée
+                  onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HousingLocatorPage()),
+                      );
+                    },
               ),
               const SizedBox(height: 30),
               // Section des rendez-vous

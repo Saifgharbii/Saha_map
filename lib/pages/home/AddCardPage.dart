@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saha_map/pages/home/CheckoutPage.dart';
 
 class AddCardPage extends StatefulWidget {
   const AddCardPage({super.key});
@@ -14,6 +15,8 @@ class _AddCardPageState extends State<AddCardPage> {
   final TextEditingController _cvvController = TextEditingController();
 
   String cardNumber = "0000 0000 0000 0000";
+  String name = "Votre nom";
+  String expiryDate = "04/28";
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +50,18 @@ class _AddCardPageState extends State<AddCardPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    cardNumber,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      
+                      Text(
+                        cardNumber,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -61,9 +69,7 @@ class _AddCardPageState extends State<AddCardPage> {
                     style: TextStyle(color: Colors.white70),
                   ),
                   Text(
-                    _nameController.text.isNotEmpty
-                        ? _nameController.text
-                        : "votre nom",
+                    name,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   const SizedBox(height: 10),
@@ -72,84 +78,99 @@ class _AddCardPageState extends State<AddCardPage> {
                     style: TextStyle(color: Colors.white70),
                   ),
                   Text(
-                    _expiryDateController.text.isNotEmpty
-                        ? _expiryDateController.text
-                        : "04/28",
+                    expiryDate,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
-
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
             // Champs de saisie pour le formulaire
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Nom Et Prénom",
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
+            SizedBox(
+              width: double.infinity, // Assurez-vous que le champ a une largeur fixe
+              child: TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: "Nom Et Prénom",
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) {
+                  setState(() {
+                    name = _nameController.text.isNotEmpty
+                        ? _nameController.text
+                        : "Votre nom";
+                  });
+                },
               ),
-              onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 10),
 
             // Numéro de carte avec validation de 16 chiffres
-            TextField(
-              controller: _cardNumberController,
-              keyboardType: TextInputType.number,
-              maxLength: 16, // Limite à 16 caractères
-              decoration: const InputDecoration(
-                labelText: "Numéro",
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-                counterText: "", // Cache l'indicateur de longueur
-              ),
-              onChanged: (value) {
-                if (value.length == 16) {
+            SizedBox(
+              width: double.infinity, // Largeur fixe pour le champ de numéro de carte
+              child: TextField(
+                controller: _cardNumberController,
+                keyboardType: TextInputType.number,
+                maxLength: 16, // Limite à 16 caractères
+                decoration: const InputDecoration(
+                  labelText: "Numéro de carte",
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  counterText: "", // Cache l'indicateur de longueur
+                ),
+                onChanged: (value) {
                   setState(() {
                     cardNumber = _formatCardNumber(value);
                   });
-                } else {
-                  setState(() {
-                    cardNumber = "0000 0000 0000 0000";
-                  });
-                }
-              },
+                },
+              ),
             ),
             const SizedBox(height: 10),
 
-            // Date d'expiration et CVV
+            // Date d'expiration et CVV avec largeur fixe
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _expiryDateController,
-                    keyboardType: TextInputType.datetime,
-                    decoration: const InputDecoration(
-                      labelText: "Date D'expiration",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
+                  child: SizedBox(
+                    width: double.infinity, // Largeur fixe pour le champ de date d'expiration
+                    child: TextField(
+                      controller: _expiryDateController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: const InputDecoration(
+                        labelText: "Date D'expiration",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (_) {
+                        setState(() {
+                          expiryDate = _expiryDateController.text.isNotEmpty
+                              ? _expiryDateController.text
+                              : "04/28";
+                        });
+                      },
                     ),
-                    onChanged: (_) => setState(() {}),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: TextField(
-                    controller: _cvvController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 3, // CVV limite à 3 chiffres
-                    decoration: const InputDecoration(
-                      labelText: "CVV",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      counterText: "",
+                  child: SizedBox(
+                    width: double.infinity, // Largeur fixe pour le champ de CVV
+                    child: TextField(
+                      controller: _cvvController,
+                      keyboardType: TextInputType.number,
+                      maxLength: 3, // CVV limite à 3 chiffres
+                      decoration: const InputDecoration(
+                        labelText: "CVV",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        counterText: "",
+                      ),
                     ),
                   ),
                 ),
@@ -157,22 +178,30 @@ class _AddCardPageState extends State<AddCardPage> {
             ),
             const SizedBox(height: 20),
 
-            // Bouton Enregistrer
+            // Bouton Enregistrer avec validation
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  if (_cardNumberController.text.length == 16) {
+                  String cardNumberInput = _cardNumberController.text.replaceAll(" ", "");
+                  String cvvInput = _cvvController.text;
+
+                  if (cardNumberInput.length == 16 && cvvInput.length == 3) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Carte enregistrée avec succès !"),
-                        backgroundColor: Colors.green,
+                        backgroundColor: Color.fromARGB(255, 200, 232, 201),
                       ),
+                    );
+                    // Navigue vers la nouvelle page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CheckoutPage()),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Veuillez entrer un numéro de carte valide (16 chiffres)."),
+                        content: Text("Veuillez entrer un numéro de carte valide (16 chiffres) et un CVV valide (3 chiffres)."),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -205,6 +234,4 @@ class _AddCardPageState extends State<AddCardPage> {
     }
     return buffer.toString();
   }
-
-
 }
