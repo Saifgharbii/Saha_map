@@ -17,7 +17,7 @@ List<Map<String, List<String>>> randomValues = [
 }];
 
 class DoctorInfoPage extends StatefulWidget {
-  final DoctorWorksAtServiceProvider docSer;
+  final DoctorModel docSer;
   // final String name;
   // final String speciality;
   // final String address;
@@ -77,7 +77,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
               const SizedBox(height: 16),
               _buildSectionTitle("Profil"),
               Text(
-                widget.docSer.serviceProvider.description,
+                widget.docSer.user.username,
                 style: const TextStyle(fontSize: 16, height: 1.5),
               ),
               const SizedBox(height: 16),
@@ -166,7 +166,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
 
                       } else {
                         favoriteDoctors.removeWhere(
-                                (doctor) => doctor['name'] == widget.docSer.doctor.user.username);
+                                (doctor) => doctor['name'] == widget.docSer.user.username);
                       }
                     });
 
@@ -186,11 +186,12 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage(widget.docSer.serviceProvider.photo_url),
+                     backgroundImage: NetworkImage(widget.docSer.user.profilePicture ?? 'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png'),
+
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.docSer.serviceProvider.name,
+                      widget.docSer.user.username,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -199,7 +200,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.docSer.doctor.speciality.name,
+                      widget.docSer.speciality.name,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -253,7 +254,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChoisireDatePage(
-                    doctorName: widget.docSer.doctor.user.username,
+                    doctorName: widget.docSer.user.username,
                     doctorAvailableTimesByDate: randomValues,
                   ),
                 ),

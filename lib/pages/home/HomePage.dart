@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
+import 'package:get/get.dart'; // Ensure GetX is imported
+
 import 'appointment/AppointmentPage.dart';
 import '../profile/SettingsPage.dart';
 import '../profile/NotificationsPage1.dart';
@@ -24,36 +26,104 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final GlobalController _globalController = GlobalController.to;
+
+  late GlobalController _globalController;
+  late List<AppointmentModel> listOfAppointments;
+  late List<String> appointmentDetails = [];
+
   String userName = '';
   String userAvatar = '';
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize GlobalController
+    _globalController = GlobalController.to;
+
     initializeUser();
   }
 
   Future<void> initializeUser() async {
-    _auth.currentUser!.uid;
-    final DocumentSnapshot userDoc = await _db.collection('users').doc(_auth.currentUser!.uid).get();
-    final UserModel user = UserModel.fromFirestore(userDoc);
-    _globalController.setCurrentUser(user);
-    setState(() {
-      isLoading = false;
-      userName = user.username;
-      userAvatar = user.profilePicture ?? "";
-    });
+    try {
+      // Check if current user is authenticated
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No authenticated user found');
+      }
+
+      // Fetch user document
+      final DocumentSnapshot userDoc =
+          await _db.collection('users').doc(currentUser.uid).get();
+
+      // Convert Firestore document to UserModel
+      final UserModel user = UserModel.fromFirestore(userDoc);
+
+      // Set current user in GlobalController
+      _globalController.setCurrentUser(user);
+
+      // Update state with user information
+      setState(() {
+        userName = user.username;
+        userAvatar = user.profilePicture ?? "";
+      });
+
+      // Fetch all data (including appointments) from GlobalController
+      await _globalController.fetchAllData();
+
+      // Fetch scheduled appointments
+      await fetchScheduledAppointments();
+
+      // Mark loading as complete
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load user information: $e')),
+      );
+    }
+  }
+
+  Future<void> fetchScheduledAppointments() async {
+    try {
+      // Access appointments from GlobalController
+      listOfAppointments = _globalController.appointments.value;
+
+      // Filter scheduled appointments for the current user
+      final scheduledAppointments = listOfAppointments.where((appointment) {
+        return appointment.patient.user.id == _auth.currentUser!.uid &&
+            appointment.status == AppointmentStatus.SCHEDULED;
+      }).toList();
+
+      // Log appointment details
+      //
+      // Update the appointment details list for display
+      appointmentDetails.clear(); // Clear any previous details
+      if (scheduledAppointments.isEmpty) {
+        appointmentDetails.add('No scheduled appointments for this user.');
+      } else {
+        for (var appointment in scheduledAppointments) {
+          appointmentDetails.add(
+              'Appointment with Dr. ${appointment.doctor.user.username} at ${appointment.appointmentHour}');
+        }
+      }
+    } catch (e) {
+      print('Error fetching scheduled appointments: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load appointments')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if(isLoading) {
-      return const Scaffold(
-          body: Center(
-              child: CircularProgressIndicator()
-          )
-      );
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +139,9 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: userAvatar.isEmpty ? const AssetImage('assets/images/image.png') : NetworkImage(userAvatar),
+                backgroundImage: userAvatar.isEmpty
+                    ? const AssetImage('assets/images/image.png')
+                    : NetworkImage(userAvatar),
                 radius: 25,
               ),
             ),
@@ -162,7 +234,8 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AppointmentPage()),
+                        MaterialPageRoute(
+                            builder: (context) => AppointmentPage()),
                       );
                     },
                   ),
@@ -174,11 +247,11 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => PharmacyLocatorPage()),
+                        MaterialPageRoute(
+                            builder: (context) => PharmacyLocatorPage()),
                       );
                     },
                   ),
-
                 ],
               ),
               const SizedBox(height: 20),
@@ -204,11 +277,21 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              AppointmentCard(), // Carte de téléconsultation Dr. Rim Maala
-              const SizedBox(height: 20),
-              AppointmentCard2(), // Carte de téléconsultation Dr. Sami Fourti
-              const SizedBox(height: 20),
+              // Display appointments in a ListView
+              if (appointmentDetails.isNotEmpty)
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: appointmentDetails.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        title: Text(appointmentDetails[index]),
+                      ),
+                    );
+                  },
+                )
             ],
           ),
         ),
@@ -222,24 +305,24 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             switch (index) {
               case 0:
-              // Accueil
+                // Accueil
                 break;
               case 1:
-              // Agenda
+                // Agenda
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CalendarPage()),
                 );
                 break;
               case 2:
-              // Messagerie
+                // Messagerie
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MessagesPage()),
                 );
                 break;
               case 3:
-              // Profil
+                // Profil
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -249,9 +332,12 @@ class _HomePageState extends State<HomePage> {
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
-            BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Agenda"),
-            BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Paramètres"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today), label: "Agenda"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.chat), label: "Messagerie"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: "Paramètres"),
           ],
         ),
       ),
@@ -259,10 +345,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
-
 // Le reste du code reste inchangé pour OptionCard, AppointmentCard, etc.
-
 
 class OptionCard extends StatelessWidget {
   final IconData icon;
@@ -272,7 +355,8 @@ class OptionCard extends StatelessWidget {
   final double height;
   final VoidCallback? onTap; // Ajoutez un callback pour le clic
 
-  const OptionCard({super.key,
+  const OptionCard({
+    super.key,
     required this.icon,
     required this.text,
     required this.color,
@@ -286,7 +370,9 @@ class OptionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap, // Utilisation du callback
       child: Container(
-        width: isFullWidth ? double.infinity : MediaQuery.of(context).size.width * 0.45,
+        width: isFullWidth
+            ? double.infinity
+            : MediaQuery.of(context).size.width * 0.45,
         height: height,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -300,7 +386,8 @@ class OptionCard extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -309,120 +396,3 @@ class OptionCard extends StatelessWidget {
     );
   }
 }
-
-class AppointmentCard extends StatelessWidget {
-  const AppointmentCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/doctor1.webp'),
-                radius: 40,
-              ),
-              SizedBox(width: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Dr. Rim Maala",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Généraliste",
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                  Text(
-                    "Jeudi, 14 novembre 12h30",
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {},
-            style:
-            ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white),),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AppointmentCard2 extends StatelessWidget {
-  const AppointmentCard2({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/doctor2.jpg'),
-                radius: 40,
-              ),
-              SizedBox(width: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Dr. Sami Fourti",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Cardiologue",
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                  Text(
-                    "Lundi, 18 novembre 15h00",
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text("Rejoindre l'appel",style: TextStyle(fontSize: 14, color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
