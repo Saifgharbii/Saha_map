@@ -876,6 +876,8 @@ import 'package:saha_map/pages/home/appointment/ClinicInfoPage.dart';
 import '../../../models/models.dart';
 import 'package:latlong2/latlong.dart';
 import 'DoctorInfoPage.dart'; // Import the DoctorInfoPage here
+
+class ResultPage extends StatefulWidget {
 import 'package:firebase_core/firebase_core.dart';
 import '../../../firebase_options.dart';
 
@@ -896,7 +898,7 @@ class ResultPage extends StatefulWidget {
 }
 
 class _ResultPageState extends State<ResultPage> {
-  final GlobalController _globalController = Get.find();
+  GlobalController globalController = GlobalController.to;
   List<DoctorModel> listOfDoctors = [];
   List<DoctorModel> filteredDoctors = [];
   List<ServiceProviderModel> listOfCLINICS = [];

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AppointmentConfirmationPage extends StatelessWidget {
   final String doctorName;
   final DateTime selectedDate;
-  final String selectedTime;
+  final int selectedHour;
   final String problemDescription;
 
   const AppointmentConfirmationPage({super.key, 
     required this.doctorName,
     required this.selectedDate,
-    required this.selectedTime,
+    required this.selectedHour,
     required this.problemDescription,
   });
 
@@ -45,7 +45,7 @@ class AppointmentConfirmationPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text('Date: ${selectedDate.toLocal()}'),
                     const SizedBox(height: 10),
-                    Text('Heure: $selectedTime'),
+                    Text('Heure: $selectedHour'),
                     const SizedBox(height: 10),
                     Text('Problème: $problemDescription'),
                     const SizedBox(height: 20),

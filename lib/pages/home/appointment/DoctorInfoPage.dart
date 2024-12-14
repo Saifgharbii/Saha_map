@@ -21,29 +21,10 @@ List<Map<String, List<String>>> randomValues = [
 ];
 
 class DoctorInfoPage extends StatefulWidget {
-  final DoctorModel docSer;
-  // final String name;
-  // final String speciality;
-  // final String address;
-  // final double latitude;
-  // final double longitude;
-  // final String description;
-  // final String imagepath;
-  // final List<Map<String, String>> avispatient;
-  // final List<Map<String, List<String>>> doctorAvailableTimesByDate;
+  final DoctorModel doctor;
 
-  const DoctorInfoPage({
-    super.key,
-    required this.docSer,
-    // required this.name,
-    // required this.speciality,
-    // required this.address,
-    // required this.latitude,
-    // required this.longitude,
-    // required this.description,
-    // required this.imagepath,
-    // required this.avispatient,
-    // required this.doctorAvailableTimesByDate,
+  const DoctorInfoPage({super.key,
+    required this.doctor,
   });
 
   @override
@@ -86,12 +67,12 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             children: [
               _buildDoctorCard(context), // Carte principale
               const SizedBox(height: 16),
-              //  _buildSectionTitle("Profil"),
-              // Text(
-              //   widget.docSer.user.username,
-              //   style: const TextStyle(fontSize: 16, height: 1.5),
-              // ),
-             const SizedBox(height: 16),
+              _buildSectionTitle("Profil"),
+              Text(
+                widget.doctor.user.username,
+                style: const TextStyle(fontSize: 16, height: 1.5),
+              ),
+              const SizedBox(height: 16),
               _buildSectionTitle("Avis des Patients"),
               _buildPatientReviews(),
               const SizedBox(height: 16),
@@ -172,7 +153,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       } else {
                          final doctorToRemove = Provider.of<FavoriteDoctorsModel>(context, listen: false)
       .favoriteDoctors
-      .firstWhere((doctor) => doctor['name'] == widget.docSer.user.username, );
+      .firstWhere((doctor) => doctor['name'] == widget.doctor.user.username, );
 
   if (doctorToRemove != null) {
     // Remove the found doctor
@@ -208,7 +189,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.docSer.user.username,
+                      widget.doctor.user.username,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -217,7 +198,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.docSer.speciality.name,
+                      widget.doctor.speciality.name,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -294,8 +275,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChoisireDatePage(
-                    doctorName: widget.docSer.user.username,
-                    doctorAvailableTimesByDate: randomValues,
+                    doctor: widget.doctor,
                   ),
                 ),
               );

@@ -1,54 +1,74 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
+import 'package:saha_map/models/models.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'AppointmentConfirmationPage.dart';
 
 // Page principale pour choisir une date
 class ChoisireDatePage extends StatefulWidget {
-  final String doctorName;
+  final DoctorModel doctor;
 
-  // Liste de maps pour stocker les horaires disponibles par date
-  final List<Map<String, List<String>>> doctorAvailableTimesByDate;
-
-  const ChoisireDatePage({super.key, 
-    required this.doctorName,
-    required this.doctorAvailableTimesByDate,
+  const ChoisireDatePage({
+    super.key,
+    required this.doctor,
   });
 
   @override
-  _ChoisireDatePageState createState() => _ChoisireDatePageState();
+  State<ChoisireDatePage> createState() => _ChoisireDatePageState(doctor: doctor);
 }
 
+
+
 class _ChoisireDatePageState extends State<ChoisireDatePage> {
+  final DoctorModel doctor;
+
+  _ChoisireDatePageState({required this.doctor});
+
   late DateTime _selectedDate;
-  String _selectedTime = '';
+  late AppointmentModel appointment ;
+  late int? _selectedHour = null ;
   String _selectedGender = 'Masculin'; // Genre sélectionné
   String _problemDescription = ''; // Description du problème
-  List<String> _availableTimes = []; // Horaires disponibles pour la date sélectionnée
+  GlobalController globalController = GlobalController.to;
+  late List<AppointmentModel> listOfAppointments = [];
+  bool isLoading = true;
+
 
   @override
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
-    _updateAvailableTimes(_selectedDate);
+    fetchScheduledAppointments();
   }
 
-  void _updateAvailableTimes(DateTime date) {
-    setState(() {
-      _availableTimes = [];
-      String formattedDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';  // format YYYY-MM-DD
-      for (var map in widget.doctorAvailableTimesByDate) {
-        if (map.containsKey(formattedDate)) {
-          _availableTimes = map[formattedDate] ?? [];
-          break;
-        }
-      }
-    });
+  Future<void> fetchScheduledAppointments() async {
+    try {
+      // Filter scheduled appointments for the current user
+      final scheduledAppointments = GlobalController.to.appointments.where((appointment) {
+        return
+          appointment.doctor.user.id == widget.doctor.user.id &&
+            appointment.status == AppointmentStatus.SCHEDULED;
+      }).toList();
+      setState(() {
+        listOfAppointments = scheduledAppointments;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching scheduled appointments: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load appointments')),
+      );
+      setState(() {
+        listOfAppointments = [];
+        isLoading = false;
+      });    }
   }
-
 
   // Construction du sélecteur de date avec TableCalendar
   Widget buildDateSelector() {
+
     return TableCalendar(
       focusedDay: _selectedDate,
       firstDay: DateTime.utc(2020, 1, 1),
@@ -60,11 +80,10 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
         setState(() {
           _selectedDate = selectedDay;
         });
-        _updateAvailableTimes(selectedDay);
       },
       calendarStyle: const CalendarStyle(
         todayDecoration: BoxDecoration(
-          color: Colors.blue,
+          color: Colors.green,
           shape: BoxShape.circle,
         ),
         selectedDecoration: BoxDecoration(
@@ -88,28 +107,32 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
     for (int i = 8; i <= 17; i++) {
       allHours.add('$i:00');
     }
+    List<int> not_availble_at =[] ;
+    for (var appointment in listOfAppointments)  {
+        if(appointment.appointmentDate.day == _selectedDate.day){
+          not_availble_at.add(appointment.appointmentDate.hour);
+        }
+    }
 
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       children: allHours.map((hour) {
         // Vérifier si l'heure est disponible
-        final isAvailable = _availableTimes.contains(hour);
-        final isSelected = _selectedTime == hour;
+        final isNotAvailable = not_availble_at.contains(int.parse(hour.split(":")[0]));
+        final isSelected = _selectedHour == int.parse(hour.split(":")[0]);
         return GestureDetector(
           onTap: () {
-            if (isAvailable) {
+            if (!isNotAvailable) {
               setState(() {
-                _selectedTime = hour;
+                _selectedHour = int.parse(hour.split(":")[0]);
               });
             }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? Colors.blue
-                  : (isAvailable ? Colors.grey[200] : Colors.grey[400]),
+              color: isSelected ? Colors.blue : (isNotAvailable ? Colors.red : Colors.grey[400]),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -117,7 +140,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
               style: TextStyle(
                 color: isSelected
                     ? Colors.white
-                    : (isAvailable ? Colors.black : Colors.grey),
+                    : (isNotAvailable ? Colors.black : Colors.grey),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
@@ -202,7 +225,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
 
   // Confirmer le rendez-vous et afficher la confirmation
   void _confirmAppointment() {
-    if (_selectedTime.isEmpty) {
+    if (_selectedHour== null) {
       showDialog(
         context: context,
         builder: (context) {
@@ -228,9 +251,9 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
       context,
       MaterialPageRoute(
         builder: (context) => AppointmentConfirmationPage(
-          doctorName: widget.doctorName,
+          doctorName: widget.doctor.user.username,
           selectedDate: _selectedDate,
-          selectedTime: _selectedTime,
+          selectedHour: _selectedHour!,
           problemDescription: _problemDescription,
         ),
       ),
@@ -240,9 +263,13 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    print(listOfAppointments[0].appointmentDate) ;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.doctorName,style: const TextStyle(color: Colors.teal)),
+        title: Text(widget.doctor.user.username,style: const TextStyle(color: Colors.teal)),
         backgroundColor: Colors.grey.shade50,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.teal),
