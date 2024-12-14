@@ -18,27 +18,9 @@ List<Map<String, List<String>>> randomValues = [
 
 class DoctorInfoPage extends StatefulWidget {
   final DoctorModel docSer;
-  // final String name;
-  // final String speciality;
-  // final String address;
-  // final double latitude;
-  // final double longitude;
-  // final String description;
-  // final String imagepath;
-  // final List<Map<String, String>> avispatient;
-  // final List<Map<String, List<String>>> doctorAvailableTimesByDate;
 
   const DoctorInfoPage({super.key,
     required this.docSer,
-    // required this.name,
-    // required this.speciality,
-    // required this.address,
-    // required this.latitude,
-    // required this.longitude,
-    // required this.description,
-    // required this.imagepath,
-    // required this.avispatient,
-    // required this.doctorAvailableTimesByDate,
   });
 
   @override

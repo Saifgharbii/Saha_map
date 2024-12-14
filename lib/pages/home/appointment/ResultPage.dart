@@ -893,7 +893,7 @@ import '../../../firebase_options.dart';class ResultPage extends StatefulWidget 
 }
 
 class _ResultPageState extends State<ResultPage> {
-  final GlobalController _globalController = Get.find();
+  GlobalController globalController = GlobalController.to;
   List<DoctorModel> listOfDoctors = [];
   List<DoctorModel> filteredDoctors = [];
 
@@ -906,7 +906,7 @@ class _ResultPageState extends State<ResultPage> {
   Future<void> fetchScheduledAppointments() async {
     try {
       if (widget.selectedServiceProviderType == "CABINET") {
-        listOfDoctors = _globalController.doctors.value;
+        listOfDoctors = globalController.doctors;
       }
 
       // Filter doctors based on governorate and speciality

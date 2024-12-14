@@ -12,8 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Get.put(GlobalController());
-  GlobalController globalController = GlobalController();
-  globalController.fetchAllData();
   runApp(const Sa7aMapApp());
 }
 

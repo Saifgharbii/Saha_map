@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
-import 'package:get/get.dart'; // Ensure GetX is imported
 
 import 'appointment/AppointmentPage.dart';
 import '../profile/SettingsPage.dart';
@@ -27,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  late GlobalController _globalController;
+  GlobalController globalController = GlobalController.to;
   late List<AppointmentModel> listOfAppointments;
   late List<String> appointmentDetails = [];
 
@@ -37,10 +36,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
-    // Initialize GlobalController
-    _globalController = GlobalController.to;
-
     initializeUser();
   }
 
@@ -60,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       final UserModel user = UserModel.fromFirestore(userDoc);
 
       // Set current user in GlobalController
-      _globalController.setCurrentUser(user);
+      globalController.setCurrentUser(user);
 
       // Update state with user information
       setState(() {
@@ -69,7 +64,7 @@ class _HomePageState extends State<HomePage> {
       });
 
       // Fetch all data (including appointments) from GlobalController
-      await _globalController.fetchAllData();
+      await globalController.fetchAllData();
 
       // Fetch scheduled appointments
       await fetchScheduledAppointments();
@@ -92,7 +87,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchScheduledAppointments() async {
     try {
       // Access appointments from GlobalController
-      listOfAppointments = _globalController.appointments.value;
+      listOfAppointments = globalController.appointments;
 
       // Filter scheduled appointments for the current user
       final scheduledAppointments = listOfAppointments.where((appointment) {
