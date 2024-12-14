@@ -10,11 +10,12 @@ import 'choisiredate.dart';
 // Simulez la liste des médecins favoris
 List<Map<String, String>> favoriteDoctors = [];
 List<Map<String, List<String>>> randomValues = [
-{
-"fruits": ["apple", "banana", "cherry"],
-"vegetables": ["carrot", "spinach", "broccoli"],
-"drinks": ["water", "juice", "soda"],
-}];
+  {
+    "fruits": ["apple", "banana", "cherry"],
+    "vegetables": ["carrot", "spinach", "broccoli"],
+    "drinks": ["water", "juice", "soda"],
+  }
+];
 
 class DoctorInfoPage extends StatefulWidget {
   final DoctorModel docSer;
@@ -28,7 +29,8 @@ class DoctorInfoPage extends StatefulWidget {
   // final List<Map<String, String>> avispatient;
   // final List<Map<String, List<String>>> doctorAvailableTimesByDate;
 
-  const DoctorInfoPage({super.key,
+  const DoctorInfoPage({
+    super.key,
     required this.docSer,
     // required this.name,
     // required this.speciality,
@@ -47,7 +49,7 @@ class DoctorInfoPage extends StatefulWidget {
 
 class _DoctorInfoPageState extends State<DoctorInfoPage> {
   bool isFavorite = false; // Variable pour gérer l'état du cœur
-  late final FavoritsDoctorsModel  favDoctors ;
+  late final FavoritsDoctorsModel favDoctors;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,9 +66,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             Navigator.pop(context);
           },
         ),
-        
       ),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -75,12 +75,12 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             children: [
               _buildDoctorCard(context), // Carte principale
               const SizedBox(height: 16),
-              _buildSectionTitle("Profil"),
-              Text(
-                widget.docSer.user.username,
-                style: const TextStyle(fontSize: 16, height: 1.5),
-              ),
-              const SizedBox(height: 16),
+              //  _buildSectionTitle("Profil"),
+              // Text(
+              //   widget.docSer.user.username,
+              //   style: const TextStyle(fontSize: 16, height: 1.5),
+              // ),
+             const SizedBox(height: 16),
               _buildSectionTitle("Avis des Patients"),
               _buildPatientReviews(),
               const SizedBox(height: 16),
@@ -125,12 +125,14 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today), label: "Agenda"),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Messagerie"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Paramètres"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: "Paramètres"),
         ],
       ),
     );
   }
 
+//
   Widget _buildDoctorCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -149,6 +151,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Section image et nom
           Stack(
             children: [
               Align(
@@ -163,16 +166,20 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       isFavorite = !isFavorite;
 
                       if (isFavorite) {
-
+                        favoriteDoctors.add({
+                          'name': widget.docSer.user.username,
+                        });
                       } else {
-                        favoriteDoctors.removeWhere(
-                                (doctor) => doctor['name'] == widget.docSer.user.username);
+                        favoriteDoctors.removeWhere((doctor) =>
+                            doctor['name'] == widget.docSer.user.username);
                       }
                     });
 
                     final snackBar = SnackBar(
                       content: Text(
-                        isFavorite ? "Ajouté aux favoris" : "Retiré des favoris",
+                        isFavorite
+                            ? "Ajouté aux favoris"
+                            : "Retiré des favoris",
                       ),
                       duration: const Duration(seconds: 2),
                     );
@@ -186,8 +193,10 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                     backgroundImage: NetworkImage(widget.docSer.user.profilePicture ?? 'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png'),
-
+                      backgroundImage: NetworkImage(
+                        widget.docSer.user.profilePicture ??
+                            'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png',
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -212,6 +221,26 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             ],
           ),
           const SizedBox(height: 16),
+
+          // Informations supplémentaires
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow(
+                  Icons.location_on, "Adresse", widget.docSer.address),
+              _buildInfoRow(Icons.attach_money, "Frais de consultation",
+                  "${widget.docSer.consultationFee} €"),
+              _buildInfoRow(Icons.timelapse, "Années d'expérience",
+                  "${widget.docSer.experienceYears} ans"),
+              _buildInfoRow(Icons.phone, "Numéro de téléphone",
+                  widget.docSer.user.phoneNumber),
+              _buildInfoRow(Icons.thumb_up, "Taux de recommandation",
+                  "${widget.docSer.recommendationRate}%"),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Boutons pour avis et contact
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -221,7 +250,8 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 child: Text(
                   "Ajouter avis",
@@ -235,7 +265,8 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 child: Text(
                   "Contacter",
@@ -245,6 +276,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             ],
           ),
           const SizedBox(height: 16),
+
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
@@ -270,6 +302,24 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
     );
   }
 
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.teal),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "$label: $value",
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -297,4 +347,3 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
       // }).toList(),
     );
   }
-}

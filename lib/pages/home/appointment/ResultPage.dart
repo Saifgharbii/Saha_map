@@ -872,14 +872,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart'; // If you're using flutter_map
+import 'package:saha_map/pages/home/appointment/ClinicInfoPage.dart';
 import '../../../models/models.dart';
 import 'package:latlong2/latlong.dart';
 import 'DoctorInfoPage.dart'; // Import the DoctorInfoPage here
 import 'package:firebase_core/firebase_core.dart';
-import '../../../firebase_options.dart';class ResultPage extends StatefulWidget {
+import '../../../firebase_options.dart';
+
+class ResultPage extends StatefulWidget {
   final String selectedServiceProviderType;
   final GovernorateModel selectedGovernorate;
-  final Specialties selectedSpeciality;
+  final Specialties? selectedSpeciality;
 
   const ResultPage({
     Key? key,
@@ -896,6 +899,8 @@ class _ResultPageState extends State<ResultPage> {
   final GlobalController _globalController = Get.find();
   List<DoctorModel> listOfDoctors = [];
   List<DoctorModel> filteredDoctors = [];
+  List<ServiceProviderModel> listOfCLINICS = [];
+  List<ServiceProviderModel> filteredCLINICS = [];
 
   @override
   void initState() {
@@ -907,15 +912,20 @@ class _ResultPageState extends State<ResultPage> {
     try {
       if (widget.selectedServiceProviderType == "CABINET") {
         listOfDoctors = _globalController.doctors.value;
+        // Filter doctors based on governorate and specialty
+        filteredDoctors = listOfDoctors.where((doctor) {
+          return doctor.governorate == widget.selectedGovernorate &&
+              doctor.speciality == widget.selectedSpeciality;
+        }).toList();
+      } else if (widget.selectedServiceProviderType == "CLINIC") {
+        listOfCLINICS = _globalController.service_providers.value;
+        // Filter clinics based on governorate
+        filteredCLINICS = listOfCLINICS.where((serviceProvider) {
+          return serviceProvider.governorate == widget.selectedGovernorate;
+        }).toList();
       }
 
-      // Filter doctors based on governorate and speciality
-      filteredDoctors = listOfDoctors.where((doctor) {
-        return doctor.governorate == widget.selectedGovernorate &&
-            doctor.speciality == widget.selectedSpeciality;
-      }).toList();
-
-      setState(() {});
+      setState(() {}); // Update UI after fetching and filtering
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur de chargement: $e')),
@@ -923,6 +933,108 @@ class _ResultPageState extends State<ResultPage> {
     }
   }
 
+//   @override
+//   Widget build(BuildContext context) {
+//     final governorate = widget.selectedGovernorate;
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Résultats de recherche'),
+//         backgroundColor: Colors.blueAccent,
+//       ),
+//       body: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // Combine map and doctor details into one section
+//           Expanded(
+//             flex: 1,
+//             child: Card(
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               elevation: 5,
+//               child: Column(
+//                 children: [
+//                   // Interactive Map
+//                   Expanded(
+//                     flex: 2,
+//                     child: FlutterMap(
+//                       options: MapOptions(
+//                         initialCenter:
+//                             LatLng(governorate.lat, governorate.long),
+//                         initialZoom: 12.0,
+//                       ),
+//                       children: [
+//                         TileLayer(
+//                           urlTemplate:
+//                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+//                           subdomains: ['a', 'b', 'c'],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   Divider(),
+//                   // Doctor List Section
+//                   Expanded(
+//                     flex: 1,
+//                     child: filteredDoctors.isNotEmpty
+//                         ? ListView.builder(
+//                             itemCount: filteredDoctors.length,
+//                             itemBuilder: (context, index) {
+//                               final doctor = filteredDoctors[index];
+//                               return ListTile(
+//                                 leading: ClipOval(
+//                                   child: Image.network(
+//                                     doctor.user.profilePicture ??
+//                                         'https://via.placeholder.com/150',
+//                                     width: 60,
+//                                     height: 60,
+//                                     fit: BoxFit.cover,
+//                                     errorBuilder: (context, error, stackTrace) {
+//                                       return Icon(Icons.error, size: 60);
+//                                     },
+//                                   ),
+//                                 ),
+//                                 title: Text(
+//                                   'Le médecin Dr. ${doctor.user.username}',
+//                                 ),
+//                                 subtitle: Text(
+//                                   'Cliquez pour plus de détails',
+//                                   style: TextStyle(
+//                                     color: Colors.blue,
+//                                   ),
+//                                 ),
+//                                 onTap: () {
+//                                   Navigator.push(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                       builder: (context) =>
+//                                           DoctorInfoPage(docSer: doctor),
+//                                     ),
+//                                   );
+//                                 },
+//                               );
+//                             },
+//                           )
+//                         : Center(
+//                             child: Text(
+//                               'Aucun médecin trouvé.',
+//                               style: TextStyle(
+//                                 fontSize: 16,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
   @override
   Widget build(BuildContext context) {
     final governorate = widget.selectedGovernorate;
@@ -935,7 +1047,6 @@ class _ResultPageState extends State<ResultPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Combine map and doctor details into one section
           Expanded(
             flex: 1,
             child: Card(
@@ -945,12 +1056,13 @@ class _ResultPageState extends State<ResultPage> {
               elevation: 5,
               child: Column(
                 children: [
-                  // Interactive Map
+                  // Map Section
                   Expanded(
                     flex: 2,
                     child: FlutterMap(
                       options: MapOptions(
-                        initialCenter: LatLng(governorate.lat, governorate.long),
+                        initialCenter:
+                            LatLng(governorate.lat, governorate.long),
                         initialZoom: 12.0,
                       ),
                       children: [
@@ -959,62 +1071,31 @@ class _ResultPageState extends State<ResultPage> {
                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                           subdomains: ['a', 'b', 'c'],
                         ),
-                        
+                        // Add Marker Layer
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: LatLng(governorate.lat, governorate.long),
+                              width: 40,
+                              height: 40,
+                              child: Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   Divider(),
-                  // Doctor List Section
+                  // Results Section: Doctors or Clinics
                   Expanded(
                     flex: 1,
-                    child: filteredDoctors.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: filteredDoctors.length,
-                            itemBuilder: (context, index) {
-                              final doctor = filteredDoctors[index];
-                              return ListTile(
-                                leading: ClipOval(
-                                  child: Image.network(
-                                    doctor.user.profilePicture ??
-                                        'https://via.placeholder.com/150',
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(Icons.error, size: 60);
-                                    },
-                                  ),
-                                ),
-                                title: Text(
-                                  'Le médecin Dr. ${doctor.user.username}',
-                                ),
-                                subtitle: Text(
-                                  'Cliquez pour plus de détails',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DoctorInfoPage(docSer: doctor),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Text(
-                              'Aucun médecin trouvé.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                    child: widget.selectedServiceProviderType == "CABINET"
+                        ? _buildDoctorList()
+                        : _buildClinicList(),
                   ),
                 ],
               ),
@@ -1023,5 +1104,80 @@ class _ResultPageState extends State<ResultPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildDoctorList() {
+    return filteredDoctors.isNotEmpty
+        ? ListView.builder(
+            itemCount: filteredDoctors.length,
+            itemBuilder: (context, index) {
+              final doctor = filteredDoctors[index];
+              return ListTile(
+                leading: ClipOval(
+                  child: Image.network(
+                    doctor.user.profilePicture ??
+                        'https://via.placeholder.com/150',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error, size: 60);
+                    },
+                  ),
+                ),
+                title: Text('Le médecin Dr. ${doctor.user.username}'),
+                subtitle: Text(
+                  'Cliquez pour plus de détails',
+                  style: TextStyle(color: Colors.blue),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DoctorInfoPage(docSer: doctor),
+                    ),
+                  );
+                },
+              );
+            },
+          )
+        : Center(
+            child: Text(
+              'Aucun médecin trouvé.',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          );
+  }
+
+  Widget _buildClinicList() {
+    return filteredCLINICS.isNotEmpty
+        ? ListView.builder(
+            itemCount: filteredCLINICS.length,
+            itemBuilder: (context, index) {
+              final clinic = filteredCLINICS[index];
+              return ListTile(
+                leading:
+                    Icon(Icons.local_hospital, size: 50, color: Colors.blue),
+                title: Text('${clinic.name}'),
+                subtitle: Text('Cliquer pour voir plus de détails') ,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ClinicInfoPage(
+                        serviceProvider: clinic, // Changed from docSer: doctor
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          )
+        : Center(
+            child: Text(
+              'Aucun établissement trouvé.',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          );
   }
 }

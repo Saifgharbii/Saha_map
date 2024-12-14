@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
       } else {
         for (var appointment in scheduledAppointments) {
           appointmentDetails.add(
-              'Appointment with Dr. ${appointment.doctor.user.username} at ${appointment.appointmentHour}');
+              'Appointment with Dr. ${appointment.doctor.user.username} at${appointment.appointmentDate.day} / ${appointment.appointmentDate.month}by ${appointment.appointmentHour.hour}:${appointment.appointmentHour.minute}');
         }
       }
     } catch (e) {
