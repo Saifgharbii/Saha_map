@@ -10,6 +10,7 @@ import '../profile/FavorisPage.dart';
 import '../profile/HelpPage.dart';
 import '../profile/SettingsPage.dart';
 import 'PolitiqueConfidentialitePage.dart';
+import 'package:saha_map/globals.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -7,6 +7,8 @@ import 'package:saha_map/pages/authentication/PatientRegistrationPage.dart';
 import 'package:saha_map/pages/authentication/RoleSelectionScreen.dart';
 import 'models/models.dart';
 import 'firebase_options.dart';
+import 'FavoriteDoctorsModel.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +16,13 @@ void main() async {
   Get.put(GlobalController());
   GlobalController globalController = GlobalController();
   globalController.fetchAllData();
-  runApp(const Sa7aMapApp());
+   runApp(
+    // Fournir le modèle à toute l'application avec ChangeNotifierProvider
+    ChangeNotifierProvider(
+      create: (context) => FavoriteDoctorsModel(),
+      child: const Sa7aMapApp(),
+    ),
+  );
 }
 
 class Sa7aMapApp extends StatelessWidget {
@@ -104,7 +112,9 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                      MaterialPageRoute(builder: (context) => const RoleSelectionScreen(isRegistration: true)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const RoleSelectionScreen(isRegistration: true)),
                   );
                 },
                 style: ElevatedButton.styleFrom(
