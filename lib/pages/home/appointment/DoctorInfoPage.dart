@@ -6,6 +6,9 @@ import '../HomePage.dart';
 import '../MessagesPage.dart';
 import '../../profile/SettingsPage.dart';
 import 'choisiredate.dart';
+import 'package:saha_map/globals.dart';
+import 'package:provider/provider.dart';
+import 'package:saha_map/FavoriteDoctorsModel.dart';
 
 // Simulez la liste des médecins favoris
 List<Map<String, String>> favoriteDoctors = [];
@@ -49,7 +52,15 @@ class DoctorInfoPage extends StatefulWidget {
 
 class _DoctorInfoPageState extends State<DoctorInfoPage> {
   bool isFavorite = false; // Variable pour gérer l'état du cœur
-  late final FavoritsDoctorsModel favDoctors;
+ 
+
+  @override
+  void initState() {
+    super.initState();
+    // Vérifiez si le médecin est déjà dans les favoris au démarrage
+    isFavorite = favoriteDoctors.any((doctor) => doctor['name'] == widget.docSer.user.username);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,22 +111,10 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                 MaterialPageRoute(builder: (context) => const HomePage()),
               );
               break;
-            case 1:
+            case 4:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CalendarPage()),
-              );
-              break;
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MessagesPage()),
-              );
-              break;
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
+                MaterialPageRoute(builder: (context) => const CalendarPage()),
               );
               break;
           }
@@ -164,15 +163,24 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                   onPressed: () {
                     setState(() {
                       isFavorite = !isFavorite;
-
                       if (isFavorite) {
-                        favoriteDoctors.add({
+                        Provider.of<FavoriteDoctorsModel>(context, listen: false).addFavorite({
                           'name': widget.docSer.user.username,
+                          'speciality': widget.docSer.speciality.name,
+                          'imagepath': widget.docSer.user.profilePicture ?? 'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png',
                         });
                       } else {
-                        favoriteDoctors.removeWhere((doctor) =>
-                            doctor['name'] == widget.docSer.user.username);
+                         final doctorToRemove = Provider.of<FavoriteDoctorsModel>(context, listen: false)
+      .favoriteDoctors
+      .firstWhere((doctor) => doctor['name'] == widget.docSer.user.username, );
+
+  if (doctorToRemove != null) {
+    // Remove the found doctor
+    Provider.of<FavoriteDoctorsModel>(context, listen: false).removeFavorite(doctorToRemove);
+  }
                       }
+                      // Debug: Affiche la liste des favoris dans la console
+                      print("Liste des favoris : ${Provider.of<FavoriteDoctorsModel>(context, listen: false).favoriteDoctors}");
                     });
 
                     final snackBar = SnackBar(
@@ -347,3 +355,4 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
       // }).toList(),
     );
   }
+}

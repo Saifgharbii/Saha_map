@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _login() async {
     try {
+      // Attempt login with email and password
       UserCredential user = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
@@ -35,20 +36,51 @@ class _LoginPageState extends State<LoginPage> {
       UserModel currentUser = UserModel.fromFirestore(userDoc);
       globalController.setCurrentUser(currentUser);
 
+      // Navigate to home page after successful login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const HomePage(),
         ),
       );
-
     } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+      
+      // Enhanced error handling based on specific Firebase error codes
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        errorMessage = 'Aucun utilisateur trouvé pour cet email. Veuillez vérifier votre email ou inscrire un nouveau compte.';
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        errorMessage = 'Le mot de passe est incorrect. Veuillez réessayer.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'L\'adresse e-mail entrée est invalide. Veuillez entrer un email valide.';
+      } else {
+        errorMessage = 'Une erreur est survenue. Veuillez vérifier vos informations.';
       }
+
+      // Show error message in a dialog
+      _showErrorDialog(errorMessage);
     }
+  }
+
+  // Function to display the error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Erreur'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -215,7 +247,6 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           _login();
-
                         }
                       },
                       style: ElevatedButton.styleFrom(

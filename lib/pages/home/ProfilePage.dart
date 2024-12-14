@@ -9,6 +9,8 @@ import 'package:saha_map/pages/home/PaymentPage.dart';
 import '../profile/FavorisPage.dart';
 import '../profile/HelpPage.dart';
 import '../profile/SettingsPage.dart';
+import 'PolitiqueConfidentialitePage.dart';
+import 'package:saha_map/globals.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -110,7 +112,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.lock,
                     title: "Politique De Confidentialité",
                     onTap: () {
-                      // Action pour "Politique De Confidentialité"
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PolitiqueConfidentialitePage()),
+                      );// Action pour "Payment"
+                    
                     },
                   ),
                   _buildProfileOption(

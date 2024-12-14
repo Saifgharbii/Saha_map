@@ -3,16 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
 import 'package:get/get.dart'; // Ensure GetX is imported
+import 'package:saha_map/globals.dart';
 
 import 'appointment/AppointmentPage.dart';
 import '../profile/SettingsPage.dart';
 import '../profile/NotificationsPage1.dart';
 import '../profile/HelpPage.dart';
+
 import 'ProfilePage.dart';
 import 'CalendarPage.dart';
 import 'MessagesPage.dart';
 import '../profile/FavorisPage.dart';
 import 'pharmacy_locator_page.dart';
+import 'HousingLocatorPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -260,6 +263,13 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.teal.shade50,
                 isFullWidth: true,
                 height: 120, // Hauteur augmentée
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => HousingLocatorPage()),
+                  );
+                },
               ),
               const SizedBox(height: 30),
               // Section des rendez-vous
