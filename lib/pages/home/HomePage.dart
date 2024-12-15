@@ -64,17 +64,8 @@ class _HomePageState extends State<HomePage> {
 
       await globalController.fetchPatients();
       await globalController.setCurrentUser(user);
-      print("done 1");
 
       await globalController.fetchAllData();
-      // Set current user in GlobalController
-
-
-
-
-      // Fetch all data (including appointments) from GlobalController
-
-
       // Fetch scheduled appointments
       await fetchScheduledAppointments();
 

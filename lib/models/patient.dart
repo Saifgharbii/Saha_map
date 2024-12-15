@@ -107,9 +107,9 @@ class AppointmentModel {
     final patientSnapshot = await patientRef.get();
     final doctorSnapshot = await doctorRef.get();
 
+
     final patient = PatientModel.fromFirestore(patientSnapshot) ;
     final doctor = DoctorModel.fromFirestore(doctorSnapshot);
-    print("smth");
     // final serviceProviderSnapshot = await serviceProviderRef.get();
 
 
@@ -138,8 +138,8 @@ class AppointmentModel {
       'patient_ref': patientRef,
       'doctor_ref': doctorRef,
       'service_provider_ref': serviceProvider,
-      'appointmentDate': appointmentDate,
-      'appointmentHour': appointmentHour,
+      'appointment_date': appointmentDate,
+      'appointment_hour': appointmentHour,
       'mode': mode.name,
       'status': status.name,
     };
