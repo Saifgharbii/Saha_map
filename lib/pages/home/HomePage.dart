@@ -147,6 +147,15 @@ class _HomePageState extends State<HomePage> {
                   "Salut,",
                   style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
+                if (globalController.currentUser.value!.role == Role.DOCTOR  )
+                  const Text(
+                  "Doctor",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )
+                ),
                 Text(
                   userName,
                   style: const TextStyle(

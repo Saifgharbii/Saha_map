@@ -918,6 +918,7 @@ class _ResultPageState extends State<ResultPage> {
           return doctor.governorate == widget.selectedGovernorate &&
               doctor.speciality == widget.selectedSpeciality;
         }).toList();
+        print(globalController.appointments) ;
       } else if (widget.selectedServiceProviderType == "CLINIC") {
         listOfCLINICS = globalController.service_providers.value;
         // Filter clinics based on governorate

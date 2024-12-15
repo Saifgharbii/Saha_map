@@ -85,12 +85,10 @@ class GlobalController extends GetxController {
   Future<void> fetchAppointments() async {
     QuerySnapshot querySnapshot = await _firestore.collection('appointments').get();
     List<AppointmentModel> appointmentsList = [];
-    AppointmentModel appmodel ;
     for (var doc in querySnapshot.docs) {
-       appmodel = await AppointmentModel.fromFirestore(doc)  ;
       appointmentsList.add(await AppointmentModel.fromFirestore(doc));
     }
-    appointments.value = appointmentsList ;
+    appointments.value = appointmentsList;
   }
 
   // Method to set current user

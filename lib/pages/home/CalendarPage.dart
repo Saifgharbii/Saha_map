@@ -23,16 +23,15 @@ class _CalendarPageState extends State<CalendarPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  late GlobalController _globalController;
-  late List<AppointmentModel> listOfAppointments = [];
+  final GlobalController _globalController = GlobalController.to;
+  List<AppointmentModel> listOfAppointments = [];
 
-  late List<String> appointmentDetails = [];
+  List<String> appointmentDetails = [];
 
   @override
   void initState() {
     super.initState();
-    Firebase.initializeApp(); // Ensure Firebase is initialized
-    _globalController = GlobalController.to;
+    listOfAppointments = _globalController.appointments;
     initializer();
   }
 
@@ -62,7 +61,7 @@ class _CalendarPageState extends State<CalendarPage> {
     });
     try {
       // Assuming _globalController is populated or fetched from context
-      List<AppointmentModel> listOfAppointments = _globalController.appointments.value;
+      listOfAppointments = _globalController.appointments;
 
       // Filter appointments for the current user based on status
       final appointments = listOfAppointments.where((appointment) {
