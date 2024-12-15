@@ -164,7 +164,7 @@ class FirebaseDataGenerator {
       await _firestore.collection('appointments').add({
         'patient_ref': _firestore.collection('patients').doc(patient.user.id),
         'doctor_ref': _firestore.collection('doctors').doc(appointment.doctor.user.id),
-        'service_provider_ref': _firestore.collection('service_providers').doc(appointment.serviceProvider.id),
+        'service_provider_ref': _firestore.collection('service_providers').doc(appointment.serviceProvider!.id),
         'appointment_date': appointment.appointmentDate,
         'appointment_hour': appointment.appointmentHour,
         'mode': appointment.mode.name,

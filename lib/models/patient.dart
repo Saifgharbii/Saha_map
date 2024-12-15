@@ -80,7 +80,7 @@ class FavoritsDoctorsModel {
 class AppointmentModel {
   final PatientModel patient;
   final DoctorModel doctor;
-  final ServiceProviderModel serviceProvider;
+  final ServiceProviderModel? serviceProvider;
   final DateTime appointmentDate;
   final DateTime appointmentHour;
   final AppointmentMode mode;
@@ -89,7 +89,7 @@ class AppointmentModel {
   AppointmentModel({
     required this.patient,
     required this.doctor,
-    required this.serviceProvider,
+    this.serviceProvider,
     required this.appointmentDate,
     required this.appointmentHour,
     required this.mode,
@@ -102,23 +102,47 @@ class AppointmentModel {
     // Fetch patient and doctor data using their references
     final patientRef = data['patient_ref'] as DocumentReference;
     final doctorRef = data['doctor_ref'] as DocumentReference;
-    final serviceProviderRef = data['service_provider_ref'] as DocumentReference;
-
+    // final serviceProviderRef = data['service_provider_ref'] as DocumentReference;
 
     final patientSnapshot = await patientRef.get();
     final doctorSnapshot = await doctorRef.get();
-    final serviceProviderSnapshot = await serviceProviderRef.get();
+
+    final patient = PatientModel.fromFirestore(patientSnapshot) ;
+    final doctor = DoctorModel.fromFirestore(doctorSnapshot);
+    print("smth");
+    // final serviceProviderSnapshot = await serviceProviderRef.get();
 
 
     return AppointmentModel(
-      patient: PatientModel.fromFirestore(patientSnapshot),
-      doctor: DoctorModel.fromFirestore(doctorSnapshot),
-      serviceProvider: ServiceProviderModel.fromFirestore(serviceProviderSnapshot),
+      patient: patient,
+      doctor: doctor,
+      // serviceProvider: ServiceProviderModel.fromFirestore(serviceProviderSnapshot),
       appointmentDate: (data['appointment_date'] as Timestamp).toDate(),
       appointmentHour: (data['appointment_hour'] as Timestamp).toDate(),
       mode: AppointmentMode.values.byName(data['mode']),
       status: AppointmentStatus.values.byName(data['status']),
     );
+  }
+  Future<Map<String, dynamic>>  toFirestore() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    final DocumentSnapshot doctorDoc = await _firestore.collection('doctors').doc(doctor.user.id).get();
+    final DocumentSnapshot patientDoc = await _firestore.collection('patients').doc(patient.user.id).get();
+    // final DocumentSnapshot serviceProviderDoc = await _firestore.collection('doctors').doc(doctor.user.id).get();
+    // Fetch patient and doctor data using their references
+
+    final patientRef =  patientDoc.reference;
+    final doctorRef = doctorDoc.reference;
+    // final serviceProviderRef = serviceProviderDoc.reference;
+    return {
+      'patient_ref': patientRef,
+      'doctor_ref': doctorRef,
+      'service_provider_ref': serviceProvider,
+      'appointmentDate': appointmentDate,
+      'appointmentHour': appointmentHour,
+      'mode': mode.name,
+      'status': status.name,
+    };
   }
 
 

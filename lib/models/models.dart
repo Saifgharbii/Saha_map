@@ -12,12 +12,16 @@ part 'patient.dart';
 // Global Controller for State Management
 class GlobalController extends GetxController {
   final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
+  Rx<DoctorModel?> currentDoctor = Rx<DoctorModel?>(null);
+  Rx<PatientModel?> currentPatient = Rx<PatientModel?>(null);
+  RxList<PatientModel> patients = RxList<PatientModel>();
   final RxList<DoctorModel> doctors = RxList<DoctorModel>();
   final RxList<AccommodationModel> accommodations = RxList<AccommodationModel>();
   final RxList<AppointmentModel> appointments = RxList<AppointmentModel>();
   final RxList<ServiceProviderModel> service_providers = RxList<ServiceProviderModel>();
   final RxList<DoctorWorksAtServiceProvider> doctorWorksAtServiceProviders = RxList<DoctorWorksAtServiceProvider>();
   bool isDataFetched = false;
+  bool isPatientAssigned = false;
 
   // Firestore References
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -28,6 +32,7 @@ class GlobalController extends GetxController {
     await fetchDoctors();
     print("fetchDoctors done") ;
     await fetchServiceProviders();
+    // await fetchPatients();
     print("fetchServiceProviders done") ;
     // await fetchAccommodations();
     // print("accomodation done") ;
@@ -36,12 +41,19 @@ class GlobalController extends GetxController {
     await fetchDoctorWorksAtServiceProvider();
     print("All data is fetched") ;
     isDataFetched = true;
+    isPatientAssigned = true;
   }
 
   Future<void> fetchDoctors() async {
     QuerySnapshot querySnapshot = await _firestore.collection('doctors').get();
     doctors.value = querySnapshot.docs
         .map((doc) => DoctorModel.fromFirestore(doc))
+        .toList();
+  }
+  Future<void> fetchPatients() async {
+    QuerySnapshot querySnapshot = await _firestore.collection('patients').get();
+    patients.value = querySnapshot.docs
+        .map((doc) => PatientModel.fromFirestore(doc))
         .toList();
   }
 
@@ -71,21 +83,32 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchAppointments() async {
-    QuerySnapshot querySnapshot =
-        await _firestore.collection('appointments').get();
+    QuerySnapshot querySnapshot = await _firestore.collection('appointments').get();
     List<AppointmentModel> appointmentsList = [];
     for (var doc in querySnapshot.docs) {
       appointmentsList.add(await AppointmentModel.fromFirestore(doc));
     }
-    appointments.value = appointmentsList;
   }
 
-  // Helper method to get current user
-  UserModel? get getCurrentUser => currentUser.value;
-
   // Method to set current user
-  void setCurrentUser(UserModel user) {
+  Future<void>  setCurrentUser(UserModel user) async {
     currentUser.value = user;
+    if (user.role == Role.PATIENT){
+      for (var patient in patients){
+        if (user.id == patient.user.id){
+          currentPatient.value = patient;
+          break;
+        }
+      }
+    }
+    else if (user.role == Role.DOCTOR){
+      for (var doctor in doctors){
+        if (user.id == doctor.user.id){
+          currentDoctor.value = doctor;
+          break;
+        }
+      }
+    }
   }
 
   // Singleton pattern to access GlobalController from anywhere

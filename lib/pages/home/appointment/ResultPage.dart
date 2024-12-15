@@ -896,6 +896,7 @@ class ResultPage extends StatefulWidget {
 }
 
 class _ResultPageState extends State<ResultPage> {
+
   GlobalController globalController = GlobalController.to;
   List<DoctorModel> listOfDoctors = [];
   List<DoctorModel> filteredDoctors = [];
@@ -933,108 +934,6 @@ class _ResultPageState extends State<ResultPage> {
     }
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final governorate = widget.selectedGovernorate;
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Résultats de recherche'),
-//         backgroundColor: Colors.blueAccent,
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           // Combine map and doctor details into one section
-//           Expanded(
-//             flex: 1,
-//             child: Card(
-//               shape: RoundedRectangleBorder(
-//                 borderRadius: BorderRadius.circular(12),
-//               ),
-//               elevation: 5,
-//               child: Column(
-//                 children: [
-//                   // Interactive Map
-//                   Expanded(
-//                     flex: 2,
-//                     child: FlutterMap(
-//                       options: MapOptions(
-//                         initialCenter:
-//                             LatLng(governorate.lat, governorate.long),
-//                         initialZoom: 12.0,
-//                       ),
-//                       children: [
-//                         TileLayer(
-//                           urlTemplate:
-//                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-//                           subdomains: ['a', 'b', 'c'],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   Divider(),
-//                   // Doctor List Section
-//                   Expanded(
-//                     flex: 1,
-//                     child: filteredDoctors.isNotEmpty
-//                         ? ListView.builder(
-//                             itemCount: filteredDoctors.length,
-//                             itemBuilder: (context, index) {
-//                               final doctor = filteredDoctors[index];
-//                               return ListTile(
-//                                 leading: ClipOval(
-//                                   child: Image.network(
-//                                     doctor.user.profilePicture ??
-//                                         'https://via.placeholder.com/150',
-//                                     width: 60,
-//                                     height: 60,
-//                                     fit: BoxFit.cover,
-//                                     errorBuilder: (context, error, stackTrace) {
-//                                       return Icon(Icons.error, size: 60);
-//                                     },
-//                                   ),
-//                                 ),
-//                                 title: Text(
-//                                   'Le médecin Dr. ${doctor.user.username}',
-//                                 ),
-//                                 subtitle: Text(
-//                                   'Cliquez pour plus de détails',
-//                                   style: TextStyle(
-//                                     color: Colors.blue,
-//                                   ),
-//                                 ),
-//                                 onTap: () {
-//                                   Navigator.push(
-//                                     context,
-//                                     MaterialPageRoute(
-//                                       builder: (context) =>
-//                                           DoctorInfoPage(docSer: doctor),
-//                                     ),
-//                                   );
-//                                 },
-//                               );
-//                             },
-//                           )
-//                         : Center(
-//                             child: Text(
-//                               'Aucun médecin trouvé.',
-//                               style: TextStyle(
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                           ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
   @override
   Widget build(BuildContext context) {
     final governorate = widget.selectedGovernorate;

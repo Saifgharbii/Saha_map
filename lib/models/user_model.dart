@@ -37,6 +37,7 @@ class UserModel {
 
   Map<String, dynamic> toFirestore() {
     return {
+      'id' : id,
       'username': username,
       'cin': cin,
       'birthday': birthday,

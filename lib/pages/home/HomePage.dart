@@ -56,18 +56,24 @@ class _HomePageState extends State<HomePage> {
 
       // Convert Firestore document to UserModel
       final UserModel user = UserModel.fromFirestore(userDoc);
-
-      // Set current user in GlobalController
-      globalController.setCurrentUser(user);
-
       // Update state with user information
       setState(() {
         userName = user.username;
         userAvatar = user.profilePicture ?? "";
       });
 
-      // Fetch all data (including appointments) from GlobalController
+      await globalController.fetchPatients();
+      await globalController.setCurrentUser(user);
+      print("done 1");
+
       await globalController.fetchAllData();
+      // Set current user in GlobalController
+
+
+
+
+      // Fetch all data (including appointments) from GlobalController
+
 
       // Fetch scheduled appointments
       await fetchScheduledAppointments();
@@ -80,7 +86,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         isLoading = false;
       });
-
+      print(e) ;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load user information: $e')),
       );

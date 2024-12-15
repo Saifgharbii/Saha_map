@@ -14,8 +14,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Get.put(GlobalController());
-  GlobalController globalController = GlobalController();
-  globalController.fetchAllData();
    runApp(
     // Fournir le modèle à toute l'application avec ChangeNotifierProvider
     ChangeNotifierProvider(

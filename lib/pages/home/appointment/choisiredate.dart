@@ -251,7 +251,7 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
       context,
       MaterialPageRoute(
         builder: (context) => AppointmentConfirmationPage(
-          doctorName: widget.doctor.user.username,
+          doctor: widget.doctor,
           selectedDate: _selectedDate,
           selectedHour: _selectedHour!,
           problemDescription: _problemDescription,
