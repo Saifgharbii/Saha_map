@@ -23,7 +23,7 @@
 
 //   //final GlobalController globalController = Get.find();
 
-//   late GlobalController _globalController;
+//   late GlobalController globalController;
 //   late List<DoctorModel> listOfDoctors;
 //   late List<String> doctprDetails = [];
 
@@ -31,7 +31,7 @@
 //     try {
 //       // Access appointments from GlobalController
 //       if selectedServiceProviderType=="CABINET"
-//        listOfDoctors = _globalController.doctors.value;
+//        listOfDoctors = globalController.doctors.value;
 
 //       // Filter scheduled appointments for the current user
 //        final Doctors= listOfDoctors.where((doctor) {
@@ -257,7 +257,7 @@
 
 // class _ResultPageState extends State<ResultPage> {
 //   // Initialize GlobalController
-//   final GlobalController _globalController = Get.find();
+//   final GlobalController globalController = Get.find();
 
 //   // Initialize lists
 //   List<DoctorModel> listOfDoctors = [];
@@ -273,7 +273,7 @@
 //     try {
 //       // Access appointments from GlobalController
 //       if (widget.selectedServiceProviderType == "CABINET") {
-//         listOfDoctors = _globalController.doctors.value;
+//         listOfDoctors = globalController.doctors.value;
 //       }
 
 //       // Filter doctors based on governorate and speciality
@@ -345,7 +345,7 @@
 
 // class _ResultPageState extends State<ResultPage> {
 //   // Initialize GlobalController
-//   final GlobalController _globalController = Get.find();
+//   final GlobalController globalController = Get.find();
 
 //   // Initialize lists
 //   List<DoctorModel> listOfDoctors = [];
@@ -361,7 +361,7 @@
 //     try {
 //       // Access appointments from GlobalController
 //       if (widget.selectedServiceProviderType == "CABINET") {
-//         listOfDoctors = _globalController.doctors.value;
+//         listOfDoctors = globalController.doctors.value;
 //       }
 
 //       // Filter doctors based on governorate and speciality
@@ -509,7 +509,7 @@
 // }
 
 // class _ResultPageState extends State<ResultPage> {
-//   final GlobalController _globalController = Get.find();
+//   final GlobalController globalController = Get.find();
 //   List<DoctorModel> listOfDoctors = [];
 //   List<String> doctorDetails = [];
 
@@ -522,7 +522,7 @@
 //   Future<void> fetchScheduledAppointments() async {
 //     try {
 //       if (widget.selectedServiceProviderType == "CABINET") {
-//         listOfDoctors = _globalController.doctors.value;
+//         listOfDoctors = globalController.doctors.value;
 //       }
 
 //       final filteredDoctors = listOfDoctors.where((doctor) {
@@ -719,7 +719,7 @@
 // }
 
 // class _ResultPageState extends State<ResultPage> {
-//   final GlobalController _globalController = Get.find();
+//   final GlobalController globalController = Get.find();
 //   List<DoctorModel> listOfDoctors = [];
 //   List<String> doctorDetails = [];
 
@@ -732,7 +732,7 @@
 //   Future<void> fetchScheduledAppointments() async {
 //     try {
 //       if (widget.selectedServiceProviderType == "CABINET") {
-//         listOfDoctors = _globalController.doctors.value;
+//         listOfDoctors = globalController.doctors.value;
 //       }
 
 //       final filteredDoctors = listOfDoctors.where((doctor) {
@@ -877,9 +877,7 @@ import '../../../models/models.dart';
 import 'package:latlong2/latlong.dart';
 import 'DoctorInfoPage.dart'; // Import the DoctorInfoPage here
 
-class ResultPage extends StatefulWidget {
-import 'package:firebase_core/firebase_core.dart';
-import '../../../firebase_options.dart';
+
 
 class ResultPage extends StatefulWidget {
   final String selectedServiceProviderType;
@@ -913,14 +911,14 @@ class _ResultPageState extends State<ResultPage> {
   Future<void> fetchScheduledAppointments() async {
     try {
       if (widget.selectedServiceProviderType == "CABINET") {
-        listOfDoctors = _globalController.doctors.value;
+        listOfDoctors = globalController.doctors.value;
         // Filter doctors based on governorate and specialty
         filteredDoctors = listOfDoctors.where((doctor) {
           return doctor.governorate == widget.selectedGovernorate &&
               doctor.speciality == widget.selectedSpeciality;
         }).toList();
       } else if (widget.selectedServiceProviderType == "CLINIC") {
-        listOfCLINICS = _globalController.service_providers.value;
+        listOfCLINICS = globalController.service_providers.value;
         // Filter clinics based on governorate
         filteredCLINICS = listOfCLINICS.where((serviceProvider) {
           return serviceProvider.governorate == widget.selectedGovernorate;
@@ -1136,7 +1134,7 @@ class _ResultPageState extends State<ResultPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DoctorInfoPage(docSer: doctor),
+                      builder: (context) => DoctorInfoPage(doctor: doctor),
                     ),
                   );
                 },

@@ -39,7 +39,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
   void initState() {
     super.initState();
     // Vérifiez si le médecin est déjà dans les favoris au démarrage
-    isFavorite = favoriteDoctors.any((doctor) => doctor['name'] == widget.docSer.user.username);
+    isFavorite = favoriteDoctors.any((doctor) => doctor['name'] == widget.doctor.user.username);
   }
 
   @override
@@ -146,16 +146,16 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                       isFavorite = !isFavorite;
                       if (isFavorite) {
                         Provider.of<FavoriteDoctorsModel>(context, listen: false).addFavorite({
-                          'name': widget.docSer.user.username,
-                          'speciality': widget.docSer.speciality.name,
-                          'imagepath': widget.docSer.user.profilePicture ?? 'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png',
+                          'name': widget.doctor.user.username,
+                          'speciality': widget.doctor.speciality.name,
+                          'imagepath': widget.doctor.user.profilePicture ?? 'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png',
                         });
                       } else {
                          final doctorToRemove = Provider.of<FavoriteDoctorsModel>(context, listen: false)
       .favoriteDoctors
       .firstWhere((doctor) => doctor['name'] == widget.doctor.user.username, );
 
-  if (doctorToRemove != null) {
+  if (doctorToRemove.isEmpty) {
     // Remove the found doctor
     Provider.of<FavoriteDoctorsModel>(context, listen: false).removeFavorite(doctorToRemove);
   }
@@ -183,7 +183,7 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
                     CircleAvatar(
                       radius: 50,
                       backgroundImage: NetworkImage(
-                        widget.docSer.user.profilePicture ??
+                        widget.doctor.user.profilePicture ??
                             'https://www.refugee-action.org.uk/wp-content/uploads/2016/10/anonymous-user.png',
                       ),
                     ),
@@ -216,15 +216,15 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildInfoRow(
-                  Icons.location_on, "Adresse", widget.docSer.address),
+                  Icons.location_on, "Adresse", widget.doctor.address),
               _buildInfoRow(Icons.attach_money, "Frais de consultation",
-                  "${widget.docSer.consultationFee} €"),
+                  "${widget.doctor.consultationFee} €"),
               _buildInfoRow(Icons.timelapse, "Années d'expérience",
-                  "${widget.docSer.experienceYears} ans"),
+                  "${widget.doctor.experienceYears} ans"),
               _buildInfoRow(Icons.phone, "Numéro de téléphone",
-                  widget.docSer.user.phoneNumber),
+                  widget.doctor.user.phoneNumber),
               _buildInfoRow(Icons.thumb_up, "Taux de recommandation",
-                  "${widget.docSer.recommendationRate}%"),
+                  "${widget.doctor.recommendationRate}%"),
             ],
           ),
           const SizedBox(height: 16),
@@ -334,5 +334,4 @@ class _DoctorInfoPageState extends State<DoctorInfoPage> {
       //   );
       // }).toList(),
     );
-  }
 }

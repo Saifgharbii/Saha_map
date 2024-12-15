@@ -266,7 +266,6 @@ class _ChoisireDatePageState extends State<ChoisireDatePage> {
     if (isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    print(listOfAppointments[0].appointmentDate) ;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.doctor.user.username,style: const TextStyle(color: Colors.teal)),

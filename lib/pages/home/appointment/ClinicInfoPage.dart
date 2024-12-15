@@ -647,7 +647,7 @@ class _ClinicInfoPageState extends State<ClinicInfoPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  DoctorInfoPage(docSer: doctor),
+                                  DoctorInfoPage(doctor: doctor),
                             ),
                           );
                         },
