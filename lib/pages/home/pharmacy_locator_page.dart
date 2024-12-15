@@ -207,7 +207,12 @@ void _searchLocation(String query) {
           // Carte avec Stack pour positionner les icônes des pharmacies
           Expanded(
             child: FlutterMap(
-              mapController: _mapController,
+                  mapController: _mapController,
+                  options: MapOptions(
+                  initialCenter:
+                  userPosition,
+                  initialZoom: 12.0,
+                  ),
               children: [
                 // Affichage des tuiles de carte
                 TileLayer(

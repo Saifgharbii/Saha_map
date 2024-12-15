@@ -223,8 +223,14 @@ class _HousingLocatorPageState extends State<HousingLocatorPage> {
           ),
           // Carte avec Stack pour positionner les icônes des logements et des cliniques
           Expanded(
+
             child: FlutterMap(
-              mapController: _mapController,
+                      mapController: _mapController,
+                      options: MapOptions(
+                      initialCenter:
+                      userPosition,
+                      initialZoom: 12.0,
+                      ),
               children: [
                 // Affichage des tuiles de carte
                 TileLayer(
