@@ -1,26 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'HomePage.dart';
 import 'MessagesPage.dart';
 import '../profile/SettingsPage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   AppointmentStatus selectedTab = AppointmentStatus.SCHEDULED; // Default to "Scheduled"
   bool isLoading = true;
   String errorMessage = '';
   int currentIndex = 1;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GlobalController _globalController = GlobalController.to;
@@ -38,6 +37,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> initializer() async {
     try {
       // Fetch appointments for the default status
+
       await fetchAppointmentsByStatus(selectedTab); // Default to "Scheduled"
       // Mark loading as complete
       setState(() {
@@ -88,6 +88,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -107,14 +110,20 @@ class _CalendarPageState extends State<CalendarPage> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildCategoryTab("Complété", AppointmentStatus.DONE),
-                _buildCategoryTab("Ultérieur", AppointmentStatus.SCHEDULED),
-                _buildCategoryTab("En attente", AppointmentStatus.ON_HOLD),
-                _buildCategoryTab("Annulé", AppointmentStatus.CANCELED),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildCategoryTab("Complété", AppointmentStatus.DONE),
+                  const SizedBox(width: 10),
+                  _buildCategoryTab("Ultérieur", AppointmentStatus.SCHEDULED),
+                  const SizedBox(width: 10),
+                  _buildCategoryTab("En attente", AppointmentStatus.ON_HOLD),
+                  const SizedBox(width: 10),
+                  _buildCategoryTab("Annulé", AppointmentStatus.CANCELED),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -129,10 +138,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         itemBuilder: (context, index) {
                           var appointment = listOfAppointments[index];
                           return _buildAppointmentCard(
+                            appointment : appointment,
                             doctorName: appointment.doctor.user.username,
                             doctorImage: appointment.doctor.user.profilePicture,
                             date: appointment.appointmentDate,
                             time: appointment.appointmentHour,
+                            isDoctor: _globalController.currentUser.value?.role == Role.DOCTOR
                           );
                         },
                       ),
@@ -163,10 +174,10 @@ class _CalendarPageState extends State<CalendarPage> {
               // Stay on the current page
               break;
             case 2:
-              _navigateToPage(context, MessagesPage());
+              _navigateToPage(context, const MessagesPage());
               break;
             case 3:
-              _navigateToPage(context, SettingsPage());
+              _navigateToPage(context, const SettingsPage());
               break;
           }
         },
@@ -213,10 +224,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Function to build the appointment card
   Widget _buildAppointmentCard({
+    required AppointmentModel appointment,
     required String doctorName,
     required String? doctorImage,
     DateTime? date,
     DateTime? time,
+    required bool isDoctor
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
@@ -265,7 +278,7 @@ class _CalendarPageState extends State<CalendarPage> {
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _buildActionButtons(),
+            children: _buildActionButtons(isDoctor, appointment),
           ),
         ],
       ),
@@ -273,18 +286,45 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   // Action buttons for each appointment
-  List<Widget> _buildActionButtons() {
+
+  Future<void> _changeStatAppointment(bool isDoctor,AppointmentStatus status, AppointmentModel appointment) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    QuerySnapshot querySnapshot = await _firestore.collection('appointments').get();
+    final DocumentSnapshot doctorDoc = await _firestore.collection('doctors').doc(appointment.doctor.user.id).get();
+    final DocumentSnapshot patientDoc = await _firestore.collection('patients').doc(appointment.patient.user.id).get();
+    if (!(status == AppointmentStatus.SCHEDULED && !isDoctor)){
+      for(var doc in querySnapshot.docs){
+        final data = doc.data() as Map<String, dynamic>;
+        if( data['doctor_ref'] == doctorDoc.reference &&
+            data['patient_ref'] == patientDoc.reference &&
+            (data['appointment_date'] as Timestamp).toDate() == appointment.appointmentDate ){
+          await _firestore.collection('appointments').doc(doc.reference.id).set({'status': status.name}, SetOptions(merge: true));
+          break;
+        }
+      }
+    }
+    await _globalController.fetchAppointments();
+    await fetchAppointmentsByStatus(selectedTab);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  List<Widget> _buildActionButtons(bool isDoctor, AppointmentModel appointment) {
     return [
-      _buildButton("Voir Détails", Colors.teal),
-      _buildButton("Annuler", Colors.blue),
+      _buildButton(isDoctor ? "Confirmer" : "Voir Détails", Colors.teal,() =>  _changeStatAppointment(isDoctor,AppointmentStatus.SCHEDULED,appointment )),
+      _buildButton("Annuler", Colors.blue,() => _changeStatAppointment(isDoctor,  AppointmentStatus.CANCELED,appointment)),
     ];
   }
 
   // Button widget to handle actions
-  Widget _buildButton(String text, Color color) {
+  Widget _buildButton(String text, Color color, VoidCallback fn) {
     return ElevatedButton(
       onPressed: () {
-        // Logic for handling button press
+        fn();
       },
       style: ElevatedButton.styleFrom(backgroundColor: color),
       child: Text(text),

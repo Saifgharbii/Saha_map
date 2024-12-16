@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:saha_map/models/models.dart';
 import 'package:table_calendar/table_calendar.dart';
