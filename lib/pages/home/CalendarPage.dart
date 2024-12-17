@@ -138,6 +138,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         itemBuilder: (context, index) {
                           var appointment = listOfAppointments[index];
                           return _buildAppointmentCard(
+                            selectedStatus:   selectedTab,
                             appointment : appointment,
                             doctorName: appointment.doctor.user.username,
                             doctorImage: appointment.doctor.user.profilePicture,
@@ -224,6 +225,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Function to build the appointment card
   Widget _buildAppointmentCard({
+    required AppointmentStatus selectedStatus,
     required AppointmentModel appointment,
     required String doctorName,
     required String? doctorImage,
@@ -278,7 +280,7 @@ class _CalendarPageState extends State<CalendarPage> {
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _buildActionButtons(isDoctor, appointment),
+            children: selectedStatus != AppointmentStatus.CANCELED ? _buildActionButtons(isDoctor, appointment) : [_buildActionButtons(isDoctor, appointment)[0]],
           ),
         ],
       ),
@@ -287,7 +289,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Action buttons for each appointment
 
-  Future<void> _changeStatAppointment(bool isDoctor,AppointmentStatus status, AppointmentModel appointment) async {
+  Future<void> _changeStateAppointment(bool isDoctor,AppointmentStatus status, AppointmentModel appointment) async {
     setState(() {
       isLoading = true;
     });
@@ -315,8 +317,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
   List<Widget> _buildActionButtons(bool isDoctor, AppointmentModel appointment) {
     return [
-      _buildButton(isDoctor ? "Confirmer" : "Voir Détails", Colors.teal,() =>  _changeStatAppointment(isDoctor,AppointmentStatus.SCHEDULED,appointment )),
-      _buildButton("Annuler", Colors.blue,() => _changeStatAppointment(isDoctor,  AppointmentStatus.CANCELED,appointment)),
+      _buildButton(isDoctor ? "Confirmer" : "Voir Détails", Colors.teal,() =>  _changeStateAppointment(isDoctor,AppointmentStatus.SCHEDULED,appointment )),
+      _buildButton("Annuler", Colors.blue,() => _changeStateAppointment(isDoctor,AppointmentStatus.CANCELED,appointment)),
     ];
   }
 
@@ -327,7 +329,10 @@ class _CalendarPageState extends State<CalendarPage> {
         fn();
       },
       style: ElevatedButton.styleFrom(backgroundColor: color),
-      child: Text(text),
+      child: Text(text,
+      style: const TextStyle(color: Colors.white,),
+      ),
+
     );
   }
 }
