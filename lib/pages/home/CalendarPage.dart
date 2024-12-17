@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:saha_map/pages/home/appointment/DoctorInfoPage.dart';
 import 'HomePage.dart';
 import 'MessagesPage.dart';
 import '../profile/SettingsPage.dart';
@@ -62,12 +63,20 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       // Assuming _globalController is populated or fetched from context
       listOfAppointments = _globalController.appointments;
-
-      // Filter appointments for the current user based on status
-      final appointments = listOfAppointments.where((appointment) {
-        return appointment.status == status &&
-            appointment.patient.user.id == _auth.currentUser!.uid;
-      }).toList();
+      List<AppointmentModel> corespondingAppointments;
+      if (_globalController.currentUser.value?.role == Role.DOCTOR) {
+        corespondingAppointments = listOfAppointments.where((appointment) {
+          return appointment.status == status &&
+              appointment.doctor.user.id == _auth.currentUser!.uid;
+        }).toList();
+      }
+      else{
+        corespondingAppointments = listOfAppointments.where((appointment) {
+          return appointment.status == status &&
+              appointment.patient.user.id == _auth.currentUser!.uid;
+        }).toList();
+      }
+      final appointments = corespondingAppointments;
 
       setState(() {
         // If there are no appointments, show a message
@@ -138,6 +147,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         itemBuilder: (context, index) {
                           var appointment = listOfAppointments[index];
                           return _buildAppointmentCard(
+                            context: context,
                             selectedStatus:   selectedTab,
                             appointment : appointment,
                             doctorName: appointment.doctor.user.username,
@@ -225,6 +235,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Function to build the appointment card
   Widget _buildAppointmentCard({
+    required BuildContext context,
     required AppointmentStatus selectedStatus,
     required AppointmentModel appointment,
     required String doctorName,
@@ -255,7 +266,9 @@ class _CalendarPageState extends State<CalendarPage> {
               CircleAvatar(
                 radius: 30,
                 backgroundImage: NetworkImage(
-                  doctorImage ?? 'https://via.placeholder.com/150', // Placeholder image
+                  isDoctor ? appointment.patient.user.profilePicture ?? 'https://via.placeholder.com/150' :
+                  appointment.doctor.user.profilePicture ?? 'https://via.placeholder.com/150'
+                  , // Placeholder image
                 ),
               ),
               const SizedBox(width: 16),
@@ -263,7 +276,8 @@ class _CalendarPageState extends State<CalendarPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    doctorName,
+                    isDoctor ? appointment.patient.user.username :appointment.doctor.user.username
+                ,
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   if (date != null ) ...[
@@ -280,7 +294,7 @@ class _CalendarPageState extends State<CalendarPage> {
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: selectedStatus != AppointmentStatus.CANCELED ? _buildActionButtons(isDoctor, appointment) : [_buildActionButtons(isDoctor, appointment)[0]],
+            children: selectedStatus != AppointmentStatus.CANCELED ? _buildActionButtons(isDoctor, appointment,context) : [_buildActionButtons(isDoctor, appointment,context)[0]],
           ),
         ],
       ),
@@ -315,9 +329,16 @@ class _CalendarPageState extends State<CalendarPage> {
     });
   }
 
-  List<Widget> _buildActionButtons(bool isDoctor, AppointmentModel appointment) {
+  Future<void> navigateToNext(BuildContext context, DoctorModel doctor) async{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DoctorInfoPage(doctor: doctor)),
+          );
+      }
+  List<Widget> _buildActionButtons(bool isDoctor, AppointmentModel appointment ,BuildContext context ) {
     return [
-      _buildButton(isDoctor ? "Confirmer" : "Voir Détails", Colors.teal,() =>  _changeStateAppointment(isDoctor,AppointmentStatus.SCHEDULED,appointment )),
+      _buildButton(isDoctor ? "Confirmer" : "Voir Détails", Colors.teal,isDoctor ? () =>  _changeStateAppointment(isDoctor,AppointmentStatus.SCHEDULED,appointment ) :() => navigateToNext(context,appointment.doctor) ),
       _buildButton("Annuler", Colors.blue,() => _changeStateAppointment(isDoctor,AppointmentStatus.CANCELED,appointment)),
     ];
   }

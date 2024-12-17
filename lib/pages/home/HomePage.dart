@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                   )
                 ),
                 Text(
-                  userName,
+                  userName.split(" ")[0],
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,8 +8,99 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../models/models.dart';
 import './LoginPage.dart';
+
+class YearPicker extends StatefulWidget {
+  final int initialYear;
+  final int firstYear;
+  final int lastYear;
+  final ValueChanged<int> onYearSelected;
+
+  const YearPicker({
+    Key? key,
+    required this.initialYear,
+    required this.firstYear,
+    required this.lastYear,
+    required this.onYearSelected,
+  }) : super(key: key);
+
+  @override
+  YearPickerState createState() => YearPickerState();
+}
+
+class YearPickerState extends State<YearPicker> {
+  late int _selectedYear;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.initialYear;
+
+    // Initialize scroll controller and scroll to selected year
+    _scrollController = ScrollController(
+        initialScrollOffset: (widget.initialYear - widget.firstYear) * 60.0
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 250,
+      width: double.infinity,
+      child: Column(
+        children: [
+          const Text(
+            'Sélectionner une année',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: widget.lastYear - widget.firstYear + 1,
+              itemBuilder: (context, index) {
+                int year = widget.firstYear + index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedYear = year;
+                    });
+                    widget.onYearSelected(year);
+                  },
+                  child: Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: year == _selectedYear
+                          ? Colors.blueAccent
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      year.toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: year == _selectedYear
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class PatientRegistrationPage extends StatefulWidget {
   const PatientRegistrationPage({super.key});
@@ -26,13 +118,129 @@ class _PatientRegistrationPage extends State<PatientRegistrationPage> {
   String? _selectedGender;
   UserCredential? userCredential;
   bool _isLoading = false;
+  DateTime? _selectedDate ;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
   final TextEditingController _cinController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  void _showCalendarModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const Text(
+                          'Choisir votre date de naissance',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 38), // To center the title
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: [
+                          const TabBar(
+                            tabs: [
+                              Tab(text: 'Date'),
+                              Tab(text: 'Année'),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                TableCalendar(
+                                  focusedDay: _selectedDate ?? DateTime.now(),
+                                  firstDay: DateTime.utc(1900, 1, 1),
+                                  lastDay: DateTime.now(),
+                                  selectedDayPredicate: (day) {
+                                    return isSameDay(day, _selectedDate);
+                                  },
+                                  onDaySelected: (selectedDay, focusedDay) {
+                                    setState(() {
+                                      _selectedDate = selectedDay;
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                  calendarStyle: const CalendarStyle(
+                                    todayDecoration: BoxDecoration(
+                                      color: Colors.green,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    selectedDecoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    weekendTextStyle: TextStyle(color: Colors.red),
+                                  ),
+                                  headerStyle: const HeaderStyle(
+                                    formatButtonVisible: false,
+                                    titleCentered: true,
+                                  ),
+                                ),
+                                YearPicker(
+                                  initialYear: DateTime.now().year,
+                                  firstYear: 1900,
+                                  lastYear: DateTime.now().year,
+                                  onYearSelected: (selectedYear) {
+                                    setState(() {
+                                      _selectedDate = DateTime(selectedYear, 1, 1);
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
@@ -53,7 +261,7 @@ class _PatientRegistrationPage extends State<PatientRegistrationPage> {
         );
 
         int cin = int.parse(_cinController.text.trim());
-        DateTime date = DateTime.parse(_dobController.text.trim());
+        DateTime? date = _selectedDate;
         Gender gender = _selectedGender == "Male" ? Gender.MALE : Gender.FEMALE;
 
         String? profileImageUrl = await _uploadImage();
@@ -62,7 +270,7 @@ class _PatientRegistrationPage extends State<PatientRegistrationPage> {
           id: userCredential!.user!.uid,
           username: _nameController.text.trim(),
           cin: cin,
-          birthday: date,
+          birthday: date!,
           phoneNumber: _phoneController.text.trim(),
           role: Role.PATIENT, // Role est fixé à "PATIENT" par défaut
           profilePicture: profileImageUrl,
@@ -291,7 +499,7 @@ class _PatientRegistrationPage extends State<PatientRegistrationPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    _buildDatePicker(),
+                    buildDateSelector(),
                     const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
@@ -396,31 +604,27 @@ class _PatientRegistrationPage extends State<PatientRegistrationPage> {
     );
   }
 
-  Widget _buildDatePicker() {
+  Widget buildDateSelector() {
     return GestureDetector(
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          setState(() {
-            _dobController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-          });
-        }
-      },
-      child: _buildTextField(
-        label: "Date de naissance",
-        icon: Icons.calendar_today_outlined,
-        controller: _dobController,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'La date de naissance est requise.';
-          }
-          return null;
-        },
+      onTap: () => _showCalendarModal(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_today),
+            const SizedBox(width: 10),
+            Text(
+              _selectedDate == null
+                  ? 'Sélectionner votre date de naissance'
+                  : 'Date de naissance: ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}',
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }

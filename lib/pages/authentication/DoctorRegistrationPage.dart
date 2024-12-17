@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,8 +9,102 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../models/models.dart';
 import './LoginPage.dart';
+
+
+class YearPicker extends StatefulWidget {
+  final int initialYear;
+  final int firstYear;
+  final int lastYear;
+  final ValueChanged<int> onYearSelected;
+
+  const YearPicker({
+    Key? key,
+    required this.initialYear,
+    required this.firstYear,
+    required this.lastYear,
+    required this.onYearSelected,
+  }) : super(key: key);
+
+  @override
+  YearPickerState createState() => YearPickerState();
+}
+
+class YearPickerState extends State<YearPicker> {
+  late int _selectedYear;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.initialYear;
+
+    // Initialize scroll controller and scroll to selected year
+    _scrollController = ScrollController(
+        initialScrollOffset: (widget.initialYear - widget.firstYear) * 60.0
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 250,
+      width: double.infinity,
+      child: Column(
+        children: [
+          const Text(
+            'Sélectionner une année',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: widget.lastYear - widget.firstYear + 1,
+              itemBuilder: (context, index) {
+                int year = widget.firstYear + index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedYear = year;
+                    });
+                    widget.onYearSelected(year);
+                  },
+                  child: Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: year == _selectedYear
+                          ? Colors.blueAccent
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      year.toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: year == _selectedYear
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 class DoctorRegistrationPage extends StatefulWidget {
   const DoctorRegistrationPage({super.key});
 
@@ -25,16 +120,133 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
   String? _selectedGender;
   UserCredential? userCredential;
   bool _isLoading = false;
-  String ? _selectedSpecialties;
+  String ? _selectedSpeciality;
+  DateTime? _selectedDate;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
   final TextEditingController _cinController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _consultationFee = TextEditingController();
+
+  void _showCalendarModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const Text(
+                          'Choisir votre date de naissance',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 38), // To center the title
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: [
+                          const TabBar(
+                            tabs: [
+                              Tab(text: 'Date'),
+                              Tab(text: 'Année'),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                TableCalendar(
+                                  focusedDay: _selectedDate ?? DateTime.now(),
+                                  firstDay: DateTime.utc(1900, 1, 1),
+                                  lastDay: DateTime.now(),
+                                  selectedDayPredicate: (day) {
+                                    return isSameDay(day, _selectedDate);
+                                  },
+                                  onDaySelected: (selectedDay, focusedDay) {
+                                    setState(() {
+                                      _selectedDate = selectedDay;
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                  calendarStyle: const CalendarStyle(
+                                    todayDecoration: BoxDecoration(
+                                      color: Colors.green,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    selectedDecoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    weekendTextStyle: TextStyle(color: Colors.red),
+                                  ),
+                                  headerStyle: const HeaderStyle(
+                                    formatButtonVisible: false,
+                                    titleCentered: true,
+                                  ),
+                                ),
+                                YearPicker(
+                                  initialYear: DateTime.now().year,
+                                  firstYear: 1900,
+                                  lastYear: DateTime.now().year,
+                                  onYearSelected: (selectedYear) {
+                                    setState(() {
+                                      _selectedDate = DateTime(selectedYear, 1, 1);
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
@@ -48,10 +260,10 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
         );
 
         int cin = int.parse(_cinController.text.trim());
-        DateTime date = DateTime.parse(_dobController.text.trim());
-        Gender gender = _selectedGender == "Male" ? Gender.MALE : Gender.FEMALE;
-        Specialties specialties = Specialties.values.firstWhere(
-              (s) => s.toString().split('.').last == _selectedSpecialties?.toUpperCase(),
+        Gender gender = _selectedGender == "MALE" ? Gender.MALE : Gender.FEMALE;
+
+        Specialties speciality = Specialties.values.firstWhere(
+              (s) => s.toString().split('.').last == _selectedSpeciality?.toUpperCase(),
           orElse: () => Specialties.GENERAL_PRACTICE, // Valeur par défaut si aucune correspondance
         );
 
@@ -62,7 +274,7 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
           id: userCredential!.user!.uid,
           username: _nameController.text.trim(),
           cin: cin,
-          birthday: date,
+          birthday: _selectedDate!,
           gender: gender,
           profilePicture: profileImageUrl,
           phoneNumber: _phoneController.text.trim(),
@@ -72,8 +284,8 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
 // Créer un objet DoctorModel en utilisant UserModel
         DoctorModel doctor = DoctorModel(
           user: user,
-          consultationFee: 150.0,  // Remplacez par la valeur réelle
-          speciality: specialties,  // Remplacez par la spécialité réelle
+          consultationFee: double.parse(_consultationFee.text.trim()),  // Remplacez par la valeur réelle
+          speciality: speciality,  // Remplacez par la spécialité réelle
           experienceYears: int.parse(_experienceController.text.trim()),
           recommendationRate: 4.5,  // Remplacez par la note réelle
           address: _addressController.text.trim(),
@@ -256,7 +468,7 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                     ),
                     const SizedBox(height: 30),
                     _buildTextField(
-                      label: "Nom",
+                      label: "Nom et Prénom",
                       icon: Icons.person_outline,
                       controller: _nameController,
                       validator: (value) {
@@ -266,8 +478,7 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
-                    _buildDatePicker(),
+
                     const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
@@ -293,7 +504,7 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                             _selectedGender = newValue;
                           });
                         },
-                        items: <String>['Male', 'Female']
+                        items: <String>['MALE','FEMALE']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -302,6 +513,20 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                         }).toList(),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: "CIN",
+                      icon: Icons.credit_card_outlined,
+                      controller: _cinController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Le CIN est requis.';
+                        }
+                        return null;
+                      },
+                    ),
+
                     const SizedBox(height: 20),
                     _buildDatePicker(),
                     const SizedBox(height: 20),
@@ -323,17 +548,17 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                           labelText: 'Spécialité',
                           border: InputBorder.none,
                         ),
-                        value: _selectedSpecialties,
+                        value: _selectedSpeciality,
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedSpecialties = newValue;
+                            _selectedSpeciality = newValue;
                           });
                         },
-                        items: <String>['Male', 'Female']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: Specialties.values
+                            .map<DropdownMenuItem<String>>((Specialties value) {
                           return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                            value: value.name,
+                            child: Text(value.name),
                           );
                         }).toList(),
                       ),
@@ -388,51 +613,41 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      label: "Date de naissance (yyyy-mm-dd)",
-                      icon: Icons.calendar_today,
-                      controller: _dobController,
+                      label: "Prix du consultation",
+                      icon: Icons.monetization_on_outlined,
+                      controller: _consultationFee,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'La date de naissance est requise.';
+                          return 'Le prix du consultation est requis.';
                         }
                         return null;
                       },
                     ),
+                    // const SizedBox(height: 20),
+                    // _buildTextField(
+                    //   label: "Mot de passe",
+                    //   icon: Icons.lock_outline,
+                    //   controller: _passwordController,
+                    //   obscureText: !_isPasswordVisible,
+                    //   validator: (value) {
+                    //     if (value == null || value.isEmpty) {
+                    //       return 'Le mot de passe est requis.';
+                    //     }
+                    //     return null;
+                    //   },
+                    //   suffixIcon: IconButton(
+                    //     icon: Icon(
+                    //       _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    //     ),
+                    //     onPressed: () {
+                    //       setState(() {
+                    //         _isPasswordVisible = !_isPasswordVisible;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
                     const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "CIN",
-                      icon: Icons.credit_card_outlined,
-                      controller: _cinController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Le CIN est requis.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: "Mot de passe",
-                      icon: Icons.lock_outline,
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Le mot de passe est requis.';
-                        }
-                        return null;
-                      },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
-                      ),
-                    ),
+                    _buildPasswordField(),
                     const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: _signup,
@@ -480,31 +695,28 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
       ),
       validator: validator,
     );
-  }Widget _buildDatePicker() {
+  }
+  Widget _buildDatePicker() {
     return GestureDetector(
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          setState(() {
-            _dobController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-          });
-        }
-      },
-      child: _buildTextField(
-        label: "Date de naissance",
-        icon: Icons.calendar_today_outlined,
-        controller: _dobController,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'La date de naissance est requise.';
-          }
-          return null;
-        },
+      onTap: () => _showCalendarModal(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_today),
+            const SizedBox(width: 10),
+            Text(
+              _selectedDate == null
+                  ? 'Sélectionner votre date de naissance'
+                  : 'Date de naissance: ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}',
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }
