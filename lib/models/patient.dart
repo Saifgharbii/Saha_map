@@ -15,7 +15,7 @@ class PatientModel {
     return {
       'username': user.username,
       'cin': user.cin,
-      'birthday': user.birthday.toString(),
+      'birthday': user.birthday,
       'gender': user.gender.name,
       'profile_picture': user.profilePicture,
       'phone_number': user.phoneNumber,

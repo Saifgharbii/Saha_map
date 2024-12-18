@@ -293,7 +293,6 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
 
         await _firestore.collection('users').doc(user.id).set(user.toFirestore());
         // Ajouter à la collection patients
-        PatientModel patient = PatientModel(user: user);
         await _firestore.collection('doctors').doc(user.id).set(doctor.toFirestore());
         setState(() {
           _isLoading = false;
@@ -405,11 +404,6 @@ class _RegistrationPageState extends State<DoctorRegistrationPage> {
       final uploadUrl = await _uploadImageToImgur(_selectedImage!);
       return uploadUrl;
     }
-    else {
-        
-      return null;
-    }
-    
   }
 
   @override
