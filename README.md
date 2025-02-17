@@ -28,7 +28,7 @@
     <h1 width="35px">Saha Map
     </h1>
   <p align="center">
-    <h5>Sa7a Map</h5> is a mobile application built with Flutter, designed to be your comprehensive and accessible health guide. It helps you find healthcare services, book appointments, and even get basic medical advice through a Doctor Bot powered by the Gemini API.
+    Is a mobile application built with Flutter, designed to be your comprehensive and accessible health guide. It helps you find healthcare services, book appointments, and even get basic medical advice through a Doctor Bot powered by the Gemini API.
     <br />
     <br />
     <a href="https://github.com/Saifgharbii/Saha_map/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
