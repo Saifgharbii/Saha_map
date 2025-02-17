@@ -4,6 +4,7 @@ import 'CalendarPage.dart';
 import 'HomePage.dart';
 import '../profile/SettingsPage.dart';
 import 'message.dart';
+import 'ChatbotMessageriePage.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -22,6 +23,20 @@ class MessagesPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.smart_toy, color: Colors.teal), // Chatbot icon
+            onPressed: () {
+              // Navigate to the chatbot messaging page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatbotMessageriePage(), // Replace with your chatbot page
+                ),
+              );
+            },
+          ),
+        ],
         backgroundColor: Colors.white,
         elevation: 0,
       ),
