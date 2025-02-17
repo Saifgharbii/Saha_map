@@ -1,14 +1,11 @@
 # Sa7a Map: Your Accessible Health Guide 🌍⚕️
 
-<div align="center">
+
 [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Stars](https://img.shields.io/github/stars/Saifgharbii/Saha_map?style=social)](https://github.com/Saifgharbii/Saha_map)
 [![GitHub Forks](https://img.shields.io/github/forks/Saifgharbii/Saha_map?style=social)](https://github.com/Saifgharbii/Saha_map)
-</div>  
-
-
 
 <br />
 <div align="center">
@@ -18,7 +15,7 @@
     <h1 width="35px">Saha Map
     </h1>
   <p align="center">
-    **Sa7a Map** is a mobile application built with Flutter, designed to be your comprehensive and accessible health guide. It helps you find healthcare services, book appointments, and even get basic medical advice through a Doctor Bot powered by the Gemini API.
+    <h5>Sa7a Map</h5> is a mobile application built with Flutter, designed to be your comprehensive and accessible health guide. It helps you find healthcare services, book appointments, and even get basic medical advice through a Doctor Bot powered by the Gemini API.
     <br />
     <br />
     <a href="https://github.com/Saifgharbii/Saha_map/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
